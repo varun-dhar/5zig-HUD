@@ -8,5 +8,7 @@ Includes coordinates, FPS, and direction.
 
 # TODO:
 Add custom colors for HUD
+
 Add custom positions for HUD
+
 Add config file to allow above changes
