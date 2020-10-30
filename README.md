@@ -4,7 +4,7 @@ A simple HUD mod for 1.16 inspired by [The5zigMod](https://github.com/5zig-rebor
 Includes coordinates, FPS, direction, and armor durability.
 
 # Demo
-![HUD Demo](https://github.com/varun-dhar/5zig-HUD/raw/main/demo.png)
+![HUD Demo](https://github.com/varun-dhar/5zig-HUD/raw/main/HUDdemo.png)
 
 # TODO:
 Add custom colors for HUD
