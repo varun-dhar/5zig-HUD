@@ -17,9 +17,12 @@ package com.github.varun_dhar;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.items.wrapper.EntityEquipmentInvWrapper;
 
 /**
  * @TODO add custom colors, options to show/hide data in config file
@@ -33,7 +36,17 @@ public class HUD{
 	 * @param event Contains render event info
 	 */
 	@SubscribeEvent
-	public void overlay(RenderGameOverlayEvent.Post event){
+	public void overlay(RenderGameOverlayEvent.Post event) {
+		ItemStack helmet = mc.player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+		ItemStack chestplate = mc.player.getItemStackFromSlot(EquipmentSlotType.CHEST);
+		ItemStack leggings = mc.player.getItemStackFromSlot(EquipmentSlotType.LEGS);
+		ItemStack boots = mc.player.getItemStackFromSlot(EquipmentSlotType.FEET);
+		int hd,cd,ld,bd;
+		System.out.println(boots.getDamage()+" "+boots.getMaxDamage());
+		hd = (!helmet.isEmpty()&&helmet.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)helmet.getDamage()/helmet.getMaxDamage())*100)):0;
+		cd = (!chestplate.isEmpty()&&chestplate.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)chestplate.getDamage()/chestplate.getMaxDamage())*100)):0;
+		ld = (!leggings.isEmpty()&&leggings.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)leggings.getDamage()/leggings.getMaxDamage())*100)):0;
+		bd = (!boots.isEmpty()&&boots.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)boots.getDamage()/boots.getMaxDamage())*100)):0;
 //		int width = this.mc.getMainWindow().getScaledWidth();
 //		int height = this.mc.getMainWindow().getScaledHeight();
 		FontRenderer renderer = mc.fontRenderer;
@@ -56,6 +69,10 @@ public class HUD{
 		String ty = red+"Y"+white+"> "+posY;
 		String tz = red+"Z"+white+"> "+posZ;
 		String tfps = red+"FPS"+white+"> "+Minecraft.debugFPS;
+		String thd = (hd!=0)?red+"H"+white+"> "+hd+"%":"None";
+		String tcd = (cd!=0)?red+"C"+white+"> "+cd+"%":"None";
+		String tld = (ld!=0)?red+"L"+white+"> "+ld+"%":"None";
+		String tbd = (bd!=0)?red+"B"+white+"> "+bd+"%":"None";
 		String tface = red+"F"+white+"> ";
 		//why the hardcoded array didn't work, i dont know. at least this does.
 		switch (dir)
@@ -93,6 +110,11 @@ public class HUD{
 		renderer.drawStringWithShadow(event.getMatrixStack(),tz,3,23,0xFFFFFF);
 		renderer.drawStringWithShadow(event.getMatrixStack(),tfps,3,33,0xFFFFFF);
 		renderer.drawStringWithShadow(event.getMatrixStack(),tface,3,43,0xFFFFFF);
+		renderer.drawStringWithShadow(event.getMatrixStack(), TextFormatting.RED.toString()+TextFormatting.UNDERLINE.toString()+"Armor:",3,53,0xFFFFFF);
+		renderer.drawStringWithShadow(event.getMatrixStack(),thd,3,63,0xFFFFFF);
+		renderer.drawStringWithShadow(event.getMatrixStack(),tcd,3,73,0xFFFFFF);
+		renderer.drawStringWithShadow(event.getMatrixStack(),tld,3,83,0xFFFFFF);
+		renderer.drawStringWithShadow(event.getMatrixStack(),tbd,3,93,0xFFFFFF);
 	}
 
 }
