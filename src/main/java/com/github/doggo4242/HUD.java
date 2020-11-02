@@ -1,18 +1,3 @@
-/*
-Copyright 2020 doggo4242 Development
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
 package com.github.doggo4242;
 
 import net.minecraft.client.Minecraft;
@@ -22,38 +7,88 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.items.wrapper.EntityEquipmentInvWrapper;
+
+import java.util.Date;
 
 /**
- * @TODO add custom colors, options to show/hide data in config file
+ * @TODO add custom colors
  */
 
 public class HUD{
 	private final Minecraft mc = Minecraft.getInstance();
-
+	private final String white = TextFormatting.WHITE.toString();
+	private final String gray = TextFormatting.GRAY.toString();
+	private final String red = TextFormatting.RED.toString();
+	//ew java enums
+	private enum set{HUDX,HUDY,HUDAL,HUDEN,ARX,ARY,ARAL,AREN,DETIX,DETIY,DETIAL}
+	public static boolean dead = false;
+	public static int[] deathCoords = new int[3];
+	private static long deathTime = 0;
 	/**
 	 * Overlay triggers upon render event
 	 * @param event Contains render event info
 	 */
 	@SubscribeEvent
 	public void overlay(RenderGameOverlayEvent.Post event) {
-		ItemStack helmet = mc.player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-		ItemStack chestplate = mc.player.getItemStackFromSlot(EquipmentSlotType.CHEST);
-		ItemStack leggings = mc.player.getItemStackFromSlot(EquipmentSlotType.LEGS);
-		ItemStack boots = mc.player.getItemStackFromSlot(EquipmentSlotType.FEET);
-		int hd,cd,ld,bd;
-		System.out.println(boots.getDamage()+" "+boots.getMaxDamage());
-		hd = (!helmet.isEmpty()&&helmet.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)helmet.getDamage()/helmet.getMaxDamage())*100)):0;
-		cd = (!chestplate.isEmpty()&&chestplate.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)chestplate.getDamage()/chestplate.getMaxDamage())*100)):0;
-		ld = (!leggings.isEmpty()&&leggings.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)leggings.getDamage()/leggings.getMaxDamage())*100)):0;
-		bd = (!boots.isEmpty()&&boots.getMaxDamage()!=0)?(int)Math.ceil(100-(((float)boots.getDamage()/boots.getMaxDamage())*100)):0;
-//		int width = this.mc.getMainWindow().getScaledWidth();
-//		int height = this.mc.getMainWindow().getScaledHeight();
+		if(event.getType() != RenderGameOverlayEvent.ElementType.ALL)
+		{
+			return;
+		}
+		int width = this.mc.getMainWindow().getScaledWidth();
+		int height = this.mc.getMainWindow().getScaledHeight();
 		FontRenderer renderer = mc.fontRenderer;
-		String red = TextFormatting.RED.toString();
+		Date d = new Date();
+		//ill figure out how color works one day...
 		//red = TextFormatting.fromColorIndex(15).toString();
-		String white = TextFormatting.WHITE.toString();
-		String gray = TextFormatting.GRAY.toString();
+		if(dead)
+		{
+			deathTime = d.getTime();
+			dead = false;
+		}
+		if((d.getTime()-deathTime) < 300000)//5m till despawn
+		{
+			String sec = String.valueOf((int)((300000-(d.getTime()-deathTime))%60000/1000));
+			sec = (Integer.parseInt(sec)<10)?'0'+sec:sec;
+			//god i miss c's enums
+			int[] xy = {HUD5zig.settings[set.DETIX.ordinal()],HUD5zig.settings[set.DETIY.ordinal()]};
+			boolean align = (Math.abs(HUD5zig.settings[set.DETIAL.ordinal()])==1);
+			xy[0]=(xy[0]==-1 || ((xy[0]+20)>width && !align))?3:xy[0];
+			xy[1]=(xy[1]==-1 || ((xy[1]+20)>height && align))?106:xy[1];
+			renderer.drawStringWithShadow(event.getMatrixStack(), red+"Items despawn in> "+white+((300000-(d.getTime()-deathTime))/60000)+":"+sec, xy[0], xy[1], 0xFFFFFF);
+			//come to think of it, i also miss boolean algebra
+			xy[(align)?1:0]+=(align)?10:120;//if -1 or 1, set vertical alignment, else horizontal
+			renderer.drawStringWithShadow(event.getMatrixStack(),red+"Died at> X: "+white+deathCoords[0]+red+" Y: "+white+deathCoords[1]+red+" Z: "+white+deathCoords[2],xy[0],xy[1],0xFFFFFF);
+		}
+		if(Math.abs(HUD5zig.settings[set.HUDEN.ordinal()]) == 1)
+		{
+			int[] xy = {HUD5zig.settings[set.HUDX.ordinal()],HUD5zig.settings[set.HUDY.ordinal()]};
+			boolean align = (Math.abs(HUD5zig.settings[set.HUDAL.ordinal()])==1);
+			xy[0]=(xy[0]==-1 || ((xy[0]+50)>width && !align))?3:xy[0];
+			xy[1]=(xy[1]==-1 || ((xy[1]+50)>height && align))?3:xy[1];
+			String[] disp = HUDOverlay();
+			for (String s : disp) {
+				renderer.drawStringWithShadow(event.getMatrixStack(), s, xy[0], xy[1], 0xFFFFFF);
+				xy[(align)?1:0]+=(align)?10:45;//if -1 or 1, set vertical alignment, else horizontal
+			}
+		}
+		if(Math.abs(HUD5zig.settings[set.AREN.ordinal()]) == 1)
+		{
+			int[] xy = {HUD5zig.settings[set.ARX.ordinal()],HUD5zig.settings[set.ARY.ordinal()]};
+			boolean align = (Math.abs(HUD5zig.settings[set.ARAL.ordinal()])==1);
+			xy[0]=(xy[0]==-1 || ((xy[0]+50)>width && !align))?3:xy[0];
+			xy[1]=(xy[1]==-1 || ((xy[1]+50)>height && align))?66:xy[1];
+			String[] disp = armorOverlay();
+			renderer.drawStringWithShadow(event.getMatrixStack(), TextFormatting.RED.toString()+TextFormatting.UNDERLINE.toString()+"Armor:",3,53,0xFFFFFF);
+			for(String s : disp)
+			{
+				renderer.drawStringWithShadow(event.getMatrixStack(), s, xy[0], xy[1], 0xFFFFFF);
+				xy[(align)?1:0]+=(align)?10:75;//if -1 or 1, set vertical alignment, else horizontal
+			}
+		}
+
+	}
+	public String[] HUDOverlay()
+	{
 		int posX = (int)mc.player.lastTickPosX;//getting positions
 		int posY = (int)mc.player.lastTickPosY;
 		int posZ = (int)mc.player.lastTickPosZ;
@@ -62,18 +97,30 @@ public class HUD{
 		dir%=360;
 		dir/=45;
 		//direction formatting
-		//will fix intermediate directions later
-		//String[] face = {"S "+gray+"+Z","SW "+gray+"-X +Z","W "+gray+"-X","NW "+gray+"-X -Z","N "+gray+"-Z","NE "+gray+"+X -Z","E "+gray+"+X","SE "+gray+"+X +Z"};
+		//hardcoded array v2, wish me luck
+		String[] face = {"S "+gray+"+Z","SW "+gray+"-X +Z","W "+gray+"-X","NW "+ gray+"-X -Z",
+				"N "+gray+"-Z","NE "+gray+"+X -Z","E "+gray+"+X","SE "+gray+"+X +Z"};
+		dir=(dir<0||dir>=face.length)?0:dir;
+		String[] hud = {red+"X"+white+"> "+posX,red+"Y"+white+"> "+posY,red+"Z"+white+"> "+posZ
+		,red+"FPS"+white+"> "+Minecraft.debugFPS,red+"F"+white+"> "+face[dir]};
 		//System.out.println(dir);
-		String tx = red+"X"+white+"> "+posX;//formatting stuff
-		String ty = red+"Y"+white+"> "+posY;
-		String tz = red+"Z"+white+"> "+posZ;
-		String tfps = red+"FPS"+white+"> "+Minecraft.debugFPS;
-		String thd = (hd!=0)?red+"H"+white+"> "+hd+"%":"None";
-		String tcd = (cd!=0)?red+"C"+white+"> "+cd+"%":"None";
-		String tld = (ld!=0)?red+"L"+white+"> "+ld+"%":"None";
-		String tbd = (bd!=0)?red+"B"+white+"> "+bd+"%":"None";
-		String tface = red+"F"+white+"> ";
+		return hud;
+	}
+	public String[] armorOverlay()
+	{
+		ItemStack[] armor = {mc.player.getItemStackFromSlot(EquipmentSlotType.HEAD),mc.player.getItemStackFromSlot(EquipmentSlotType.CHEST),mc.player.getItemStackFromSlot(EquipmentSlotType.LEGS),mc.player.getItemStackFromSlot(EquipmentSlotType.FEET)};
+		String[] dura = new String[4];
+		char[] armorLetters = {'H','C','L','B'};
+		String[] armorStr = {"helmet","chestplate","leggings","boots"};
+		for(int i = 0;i<4;i++)
+		{
+			int t = (!armor[i].isEmpty()&&armor[i].getMaxDamage()!=0)?(int)Math.ceil(100-(((float)armor[i].getDamage()/armor[i].getMaxDamage())*100)):0;
+			dura[i] = (t!=0)?red+armorLetters[i]+white+"> "+t+"%":"No "+armorStr[i];
+		}
+		return dura;
+	}
+}
+/* lie here in disgrace until i potentially need you again hahahhaah no i dont lol die
 		//why the hardcoded array didn't work, i dont know. at least this does.
 		switch (dir)
 		{
@@ -105,16 +152,5 @@ public class HUD{
 				tface = "";
 				break;
 		}
-		renderer.drawStringWithShadow(event.getMatrixStack(),tx,3,3,0xFFFFFF);//display the text
-		renderer.drawStringWithShadow(event.getMatrixStack(),ty,3,13,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),tz,3,23,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),tfps,3,33,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),tface,3,43,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(), TextFormatting.RED.toString()+TextFormatting.UNDERLINE.toString()+"Armor:",3,53,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),thd,3,63,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),tcd,3,73,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),tld,3,83,0xFFFFFF);
-		renderer.drawStringWithShadow(event.getMatrixStack(),tbd,3,93,0xFFFFFF);
-	}
 
-}
+ */
