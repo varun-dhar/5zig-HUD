@@ -12,6 +12,7 @@ The death location coordinates will be overwritten if one dies before the timer 
 This mod will be updated to 1.16.4 as soon as Forge releases a stable build. For now, it is on 1.16.3.
 
 Feature requests can be submitted on the issues page.
+Contributions are appreciated.
 
 # TODO:
 Add custom colors for HUD
