@@ -13,7 +13,6 @@ public class ConfigFile {
 			"#To turn on features, input 1. To turn them off, input 0.\n" +
 			"#To set position of features, input their X and Y coordinates in their X and Y fields.\n" +
 			"#To set alignment of features, input 0 for horizontal and 1 for vertical.\n" +
-			"#Do not rearrange the order of the options, otherwise the mod may not function correctly.\n" +
 			"#To reset this file to default settings, delete it. It will be recreated next time the mod runs.\n" +
 			"HUD-X=-1\n" +
 			"HUD-Y=-1\n" +

@@ -1,16 +1,15 @@
 package com.github.varun_dhar;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraft.entity.player.PlayerEntity;
-
 
 public class DeathHandler
 {
 	@SubscribeEvent
-	public void onDeath(LivingDeathEvent event){
-		if(event.getEntity() instanceof PlayerEntity)
+	public void onDeath(final GuiScreenEvent.DrawScreenEvent event){
+		if(event.getGui() instanceof DeathScreen && Minecraft.getInstance().player != null)
 		{
 			System.out.println("uh oh ya deado");
 			HUD.dead = true;
