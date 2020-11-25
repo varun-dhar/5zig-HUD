@@ -64,7 +64,7 @@ public class HUD5zig//setup stuff
 		{
 			System.out.println("Could not read config. Using default settings");
 		}
-		if(Math.abs(settings[11])!=1) {//enable death timer if specified in config
+		if(Math.abs(settings[11])==1) {//enable death timer if specified in config
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 		}
 	}
