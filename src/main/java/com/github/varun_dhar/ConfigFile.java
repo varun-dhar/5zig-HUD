@@ -25,5 +25,6 @@ public class ConfigFile {
 			"DeathTimerX=-1\n" +
 			"DeathTimerY=-1\n" +
 			"DeathTimerAlignment=-1\n" +
-			"DeathTimerEnabled=-1\n";
+			"DeathTimerEnabled=-1\n" +
+			"UpdaterEnabled=-1\n";
 }

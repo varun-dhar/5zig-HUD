@@ -20,7 +20,7 @@ public class HUD{
 	private final String gray = TextFormatting.GRAY.toString();
 	private final String red = TextFormatting.RED.toString();
 	//ew java enums
-	private enum set{HUDX,HUDY,HUDAL,HUDEN,ARX,ARY,ARAL,AREN,DETIX,DETIY,DETIAL}
+	public enum set{HUDX,HUDY,HUDAL,HUDEN,ARX,ARY,ARAL,AREN,DETIX,DETIY,DETIAL,DETIEN}
 	public static boolean dead = false;
 	public static int[] deathCoords = new int[3];
 	private static long deathTime = 0;
@@ -45,7 +45,7 @@ public class HUD{
 			deathTime = d.getTime();
 			dead = false;
 		}
-		if((d.getTime()-deathTime) < 300000)//5m till despawn
+		if((d.getTime()-deathTime) < 300000 && Math.abs(HUD5zig.settings[set.DETIEN.ordinal()]) == 1)//5m till despawn
 		{
 			String sec = String.valueOf((int)((300000-(d.getTime()-deathTime))%60000/1000));
 			sec = (Integer.parseInt(sec)<10)?'0'+sec:sec;
