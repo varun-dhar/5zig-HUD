@@ -8,7 +8,7 @@ public class DeathHandler
 {
 	@SubscribeEvent
 	public void onDeath(final TickEvent.PlayerTickEvent event){
-		if(!event.player.isAlive() && Minecraft.getInstance().player != null)
+		if(!event.player.isAlive() && Minecraft.getInstance().player != null && event.player.equals(Minecraft.getInstance().player))
 		{
 			System.out.println("uh oh ya deado");
 			HUD.dead = true;
