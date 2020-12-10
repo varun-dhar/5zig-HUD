@@ -45,7 +45,7 @@ public class UpdateChecker {
 				Minecraft.getInstance().player.sendMessage(updateMsg, Util.DUMMY_UUID);
 				if(!cInv)
 				{
-					ClickEvent disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND,"5h tus");
+					ClickEvent disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND,"5h uos");
 					StringTextComponent disableMessage1 = new StringTextComponent("Click ");
 					StringTextComponent disableMessage2 = new StringTextComponent("here");
 					disableMessage2.setStyle(Style.EMPTY.setUnderlined(true));
