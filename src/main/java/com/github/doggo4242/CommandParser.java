@@ -22,10 +22,10 @@ public class CommandParser {
 		int pos;
 		List<String> cmds = Arrays.asList("dump","dumpDeath","toggleTimer","toggleHUD","toggleArmorPane",
 				"checkForUpdates","save","toggleUpdater","help","setHUDX","setHUDY","setArmorX",
-				"setArmorY","setArmorAlignment","setHUDAlignment","setDeathTimerAlignment","reset","toggleUpdaterSave",
+				"setArmorY","setArmorAlignment","setHUDAlignment","setDeathTimerAlignment","reset","updaterOffSave",
 				"saveCoords","saveCurrentCoords","addMacro","delMacro","getCoords","delCoords","listMacros","listCoords");
 		List<String> shCmds = Arrays.asList("d","dd","tt","th","tap","cfu","s","tu","h",
-				"shx","shy","sax","say","saa","sha","sdta","r","tus","sc","scc","am","dm","gc","dc","lm","lc");
+				"shx","shy","sax","say","saa","sha","sdta","r","uos","sc","scc","am","dm","gc","dc","lm","lc");
 		String[] helpRef = {"Dumps coordinates to chat.",
 		"Dumps death coordinates to chat (dumps 0,0,0 if none exist).",
 		"Shows/hides death timer.",
@@ -43,7 +43,7 @@ public class CommandParser {
 		"Sets the alignment of the HUD. Takes 1 argument.",
 		"Sets the alignment of the death timer. Takes 1 argument.",
 		"Resets all settings to defaults.",
-		"Internal command, turns updater on or off and saves settings.",
+		"Internal command, turns updater off and saves settings.",
 		"Saves specified coordinates. Takes a name for the location and the x, y, and z coordinates as arguments",
 		"Saves current coordinates. Takes a name for the location as an argument",
 		"Adds a macro. Takes the name of the macro and the text/command the macro executes as arguments",
