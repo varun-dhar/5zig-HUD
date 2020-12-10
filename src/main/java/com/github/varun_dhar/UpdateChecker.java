@@ -35,14 +35,14 @@ public class UpdateChecker {
 			JsonObject rootObj = root.getAsJsonObject();
 			if(rootObj.get("version").getAsInt() > HUD5zig.version)
 			{
-				ClickEvent e = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/the5zig-hud/files");
-				StringTextComponent c = new StringTextComponent("An update is available for 5zig-HUD. Click ");
-				StringTextComponent ln = new StringTextComponent("here");
-				ln.setStyle(Style.EMPTY.setUnderlined(true));
-				ln.setStyle(ln.getStyle().setClickEvent(e));
-				c.append(ln);
-				c.appendString(" to download the new version.");
-				Minecraft.getInstance().player.sendMessage(c, Util.DUMMY_UUID);
+				ClickEvent dlPage = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/the5zig-hud/files");
+				StringTextComponent updateMsg = new StringTextComponent("An update is available for 5zig-HUD. Click ");
+				StringTextComponent updateMsg2 = new StringTextComponent("here");
+				updateMsg2.setStyle(Style.EMPTY.setUnderlined(true));
+				updateMsg2.setStyle(updateMsg2.getStyle().setClickEvent(dlPage));
+				updateMsg.append(updateMsg2);
+				updateMsg.appendString(" to download the new version.");
+				Minecraft.getInstance().player.sendMessage(updateMsg, Util.DUMMY_UUID);
 				if(!cInv)
 				{
 					ClickEvent disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND,"5h tus");
