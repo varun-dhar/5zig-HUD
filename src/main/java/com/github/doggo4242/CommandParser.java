@@ -49,7 +49,9 @@ public class CommandParser {
 		"Adds a macro. Takes the name of the macro and the text/command the macro executes as arguments",
 		"Deletes a macro. Takes the name of the macro as an argument.",
 		"Gets the coordinates of a specified location. Takes the name of the location as an argument.",
-		"Deletes the coordinates of a specified location. Takes the name of the location as an argument"};
+		"Deletes the coordinates of a specified location. Takes the name of the location as an argument",
+		"Lists all macros",
+		"Lists all coordinate locations"};
 		String msg = event.getMessage();
 		msg = (msg.charAt(0) == '/')?msg.substring(1):msg;
 		if(macros.get(msg) != null)
