@@ -23,9 +23,9 @@ public class CommandParser {
 		List<String> cmds = Arrays.asList("dump","dumpDeath","toggleTimer","toggleHUD","toggleArmorPane",
 				"checkForUpdates","save","toggleUpdater","help","setHUDX","setHUDY","setArmorX",
 				"setArmorY","setArmorAlignment","setHUDAlignment","setDeathTimerAlignment","reset","toggleUpdaterSave",
-				"saveCoords","saveCurrentCoords","addMacro","delMacro","getCoords","delCoords");
+				"saveCoords","saveCurrentCoords","addMacro","delMacro","getCoords","delCoords","listMacros","listCoords");
 		List<String> shCmds = Arrays.asList("d","dd","tt","th","tap","cfu","s","tu","h",
-				"shx","shy","sax","say","saa","sha","sdta","r","tus","sc","scc","am","dm","gc","dc");
+				"shx","shy","sax","say","saa","sha","sdta","r","tus","sc","scc","am","dm","gc","dc","lm","lc");
 		String[] helpRef = {"Dumps coordinates to chat.",
 		"Dumps death coordinates to chat (dumps 0,0,0 if none exist).",
 		"Shows/hides death timer.",
@@ -244,6 +244,19 @@ public class CommandParser {
 							player.sendMessage(new StringTextComponent("Error deleting coordinates. Please try again later."),Util.DUMMY_UUID);
 						}
 					}
+					break;
+				case 24:
+					StringBuilder macroList = new StringBuilder();
+					macroList.append("Locations: ");
+					macros.forEach((k,v)-> macroList.append(k).append(", "));
+					player.sendMessage(new StringTextComponent(macroList.toString()),Util.DUMMY_UUID);
+					break;
+				case 25:
+					StringBuilder coordsList = new StringBuilder();
+					coordsList.append("Macros: \n");
+					saveCoords.forEach((k,v)-> coordsList.append(k).append(" ").append(v).append("\n"));
+					player.sendMessage(new StringTextComponent(coordsList.toString()),Util.DUMMY_UUID);
+					break;
 			}
 		}
 	}
