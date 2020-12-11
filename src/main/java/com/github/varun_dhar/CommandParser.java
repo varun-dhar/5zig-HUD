@@ -249,13 +249,14 @@ public class CommandParser {
 					break;
 				case 24:
 					StringBuilder macroList = new StringBuilder();
-					macroList.append("Locations: ");
+					macroList.append("Macros: ");
 					macros.forEach((k,v)-> macroList.append(k).append(", "));
+					macroList.deleteCharAt(macroList.length()-1);
 					player.sendMessage(new StringTextComponent(macroList.toString()),Util.DUMMY_UUID);
 					break;
 				case 25:
 					StringBuilder coordsList = new StringBuilder();
-					coordsList.append("Macros: \n");
+					coordsList.append("Locations: \n");
 					saveCoords.forEach((k,v)-> coordsList.append(k).append(" ").append(v).append("\n"));
 					player.sendMessage(new StringTextComponent(coordsList.toString()),Util.DUMMY_UUID);
 					break;

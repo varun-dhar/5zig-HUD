@@ -16,7 +16,7 @@ public class HUD5zig//setup stuff
 {
 	public static final String MODID = "hudmod";
 	public static final int NUM_OPS = 13;
-	public static final int version = 6;
+	public static final int version = 7;
 	public static final String[] confOps = {"HUD-X=","HUD-Y=","HUD-Alignment=","HUD-Enabled=","ArmorX=","ArmorY=","ArmorAlignment=","ArmorEnabled=","DeathTimerX=","DeathTimerY=","DeathTimerAlignment=","DeathTimerEnabled=","UpdaterEnabled="};
 	/*settings array 0- HUD x 1- HUD y 2- HUD alignment: vert/hor 3- HUD enabled/disabled
 	4- Armor x 5- Armor y 6- Armor alignment: vert/hor 7- Armor enabled/disabled
