@@ -27,7 +27,9 @@ public class ConfigFile {
 			"DeathTimerY=-1\n" +
 			"DeathTimerAlignment=-1\n" +
 			"DeathTimerEnabled=-1\n" +
-			"UpdaterEnabled=-1\n";
+			"UpdaterEnabled=-1\n" +
+			"NavX=-1\n" +
+			"NavY=-1\n";
 	public static String macroContents = "#This is the config file for the macro feature of 5zig-HUD\n" +
 			"#Lines prefaced with # signs are comments and not read by 5zig-HUD\n" +
 			"#Macros are written in the format [macro name];[command/message]\n" +

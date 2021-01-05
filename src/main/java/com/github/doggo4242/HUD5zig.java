@@ -71,7 +71,7 @@ public class HUD5zig//setup stuff
 					Arrays.fill(settings, -1);
 					System.out.println("Configuration invalid. Using default settings");
 					FileWriter writer = new FileWriter("mods/5zigHUD.cfg",true);
-					writer.write("Configuration invalid. " + i);
+					writer.write("Configuration invalid. " + (NUM_OPS-i) + '/'+ NUM_OPS+" options missing.");
 					writer.close();
 				}
 			}
