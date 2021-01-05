@@ -2,6 +2,7 @@ package com.github.doggo4242;
 
 public class ConfigFile {
 	//probably a better way to do this, but i wanted it bundled
+	//stores default config files
 	public static String configContents = "#This is the config file for 5zigHUD.\n" +
 			"#Using this file, you can customize the features of the mod.\n" +
 			"#Lines prefaced with # signs are comments and are not read by 5zigHUD.\n" +

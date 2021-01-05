@@ -6,12 +6,12 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[35,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+loaderVersion="[34,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license="Apache License 2.0"
 # A URL to refer people to when problems occur with this mod
-#issueTrackerURL="http://my.issue.tracker/" #optional
+issueTrackerURL="https://github.com/doggo4242/5zig-HUD/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
@@ -32,7 +32,7 @@ credits="Thanks to the Forge community for their helpful (if somewhat annoying) 
 authors="doggo4242" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-A HUD and mapping mod inspired by 5zig. Shows fps, coordinates, armor durability, death location coordinates, allows you to record and recall coordinates, and allows you to create macros.
+A HUD and mapping mod somewhat inspired by 5zig. Shows fps, coordinates, armor durability, death location coordinates. Also allows the creation of macros and coordinate mapping. Now includes a navigation system.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.hudmod]] #optional
@@ -41,7 +41,7 @@ A HUD and mapping mod inspired by 5zig. Shows fps, coordinates, armor durability
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[35,)" #mandatory
+    versionRange="[34,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
