@@ -9,7 +9,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class UpdateChecker {
 	@SubscribeEvent
 	public void updateCheck(ClientPlayerNetworkEvent.LoggedInEvent event)
 	{
-		if(firstRun && Math.abs(HUD5zig.settings[12]) == 1) {
+		if(firstRun && Math.abs(HUD5zig.settings[12]) == 1) {//run only
 			firstRun = false;
 			updateNotif(false);
 		}

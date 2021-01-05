@@ -4,7 +4,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.lwjgl.system.CallbackI;
 
 import java.io.*;
 import java.util.Arrays;
@@ -15,13 +14,13 @@ import java.util.Scanner;
 public class HUD5zig//setup stuff
 {
 	public static final String MODID = "hudmod";
-	public static final int NUM_OPS = 13;
-	public static final int version = 7;
-	public static final String[] confOps = {"HUD-X=","HUD-Y=","HUD-Alignment=","HUD-Enabled=","ArmorX=","ArmorY=","ArmorAlignment=","ArmorEnabled=","DeathTimerX=","DeathTimerY=","DeathTimerAlignment=","DeathTimerEnabled=","UpdaterEnabled="};
+	public static final int NUM_OPS = 15;
+	public static final int version = 8;
+	public static final String[] confOps = {"HUD-X=","HUD-Y=","HUD-Alignment=","HUD-Enabled=","ArmorX=","ArmorY=","ArmorAlignment=","ArmorEnabled=","DeathTimerX=","DeathTimerY=","DeathTimerAlignment=","DeathTimerEnabled=","UpdaterEnabled=","NavX=","NavY="};
 	/*settings array 0- HUD x 1- HUD y 2- HUD alignment: vert/hor 3- HUD enabled/disabled
 	4- Armor x 5- Armor y 6- Armor alignment: vert/hor 7- Armor enabled/disabled
 	8- Death timer/coords x 9- Death timer/coords y 10- Death timer/coords alignment: vert/hor 11- Death timer/coords enabled/disabled
-	12- Update message enabled/disabled
+	12- Update message enabled/disabled 13- Navigation compass x 14- Navigation compass y
 	 */
 	public static int[] settings = new int[NUM_OPS];
 	public HUD5zig() {
@@ -39,12 +38,12 @@ public class HUD5zig//setup stuff
 		if(Math.abs(settings[11])==1) {//enable death timer if specified in config
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 		}
-		if(Math.abs(settings[12]) == 1)
+		if(Math.abs(settings[12]) == 1)//enable update checker if specified in config
 		{
 			MinecraftForge.EVENT_BUS.register(new UpdateChecker());
 		}
 	}
-	public void readSettings(){
+	public void readSettings(){//read settings into array
 		try {
 			File cfg = new File("mods/5zigHUD.cfg");
 			if(!cfg.isFile())
@@ -80,7 +79,7 @@ public class HUD5zig//setup stuff
 			System.out.println("Could not read config. Using default settings");
 		}
 	}
-	public void readMacros(){
+	public void readMacros(){//read macros into dictionary
 		try {
 			File cfg = new File("mods/5zigHUDMacros.cfg");
 			if(!cfg.isFile())
@@ -108,7 +107,7 @@ public class HUD5zig//setup stuff
 			System.out.println("Could not read macro config.");
 		}
 	}
-	public void readCoords(){
+	public void readCoords(){//reads macros into dictionary
 		try {
 			File cfg = new File("mods/5zigHUDCoords.cfg");
 			if(!cfg.isFile())
