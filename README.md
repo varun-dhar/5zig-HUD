@@ -15,5 +15,12 @@ The death location coordinates will be overwritten if one dies before the timer 
 Feature requests can be submitted on the issues page.
 Contributions are appreciated.
 
+# Community
+We now have a [Github Discussions page](https://github.com/doggo4242/5zig-HUD/discussions)!
+
 # TODO:
 Add custom colors for HUD
+
+~~Fix direction system~~
+
+Fix navigation system
