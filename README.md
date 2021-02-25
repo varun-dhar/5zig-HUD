@@ -20,7 +20,3 @@ We now have a [Github Discussions page](https://github.com/doggo4242/5zig-HUD/di
 
 # TODO:
 Add custom colors for HUD
-
-~~Fix direction system~~
-
-Fix navigation system
