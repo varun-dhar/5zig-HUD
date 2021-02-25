@@ -63,15 +63,19 @@ public class CommandParser {
 		"Sets the y-coordinate of the navigation compass. Takes one argument.",
 		"Stops navigation and hides compass."};
 		String msg = event.getMessage();
-		msg = (msg.charAt(0) == '/')?msg.substring(1):msg;
 		if(macros.get(msg) != null)
 		{
-			event.setMessage(macros.get(msg));
+			String macro = msg.split(" ")[0];
+			event.setMessage(macros.get(macro)+msg.substring(msg.indexOf(macro)+macro.length()));
+			msg = event.getMessage();
+			System.out.println(event.getMessage());
 		}
+		msg = (msg.charAt(0) == '/')?msg.substring(1):msg;
 		if(msg.startsWith("5h"))
 		{
 			event.setCanceled(true);
-			msg = (msg.length()>=3)?msg.substring(3):msg;
+			Minecraft.getInstance().ingameGUI.getChatGUI().addToSentMessages(event.getMessage());
+			msg = (msg.length()>=3)?msg.substring(3):msg;//remove "5h "
 			String[] args = msg.split(" ");
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if((pos=cmds.indexOf(args[0])) == -1)
