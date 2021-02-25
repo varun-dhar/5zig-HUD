@@ -58,22 +58,10 @@ public class HUD{
 			int compX = (HUD5zig.settings[set.NAVX.ordinal()]==-1)?width/2+110:HUD5zig.settings[set.NAVX.ordinal()];
 			int compY = (HUD5zig.settings[set.NAVY.ordinal()]==-1)?height-40:HUD5zig.settings[set.NAVY.ordinal()];
 			renderer.drawStringWithShadow(event.getMatrixStack(),(((int)angle>180)?(int)angle-360:(int)angle)+"\u00b0",compX+5,compY+30,0xFFFFFF);
-			//set compass picture to use depending on which angle is closest
-			//theres probably a better way to do this; ill fix it later
-			for(int i = 0;i<28;i++)
-			{
-				if((int)angle>(i*(360/28)))
-				{
-					continue;
-				}
-				angle=i;
-				break;
-			}
-			//take care of case where angle is unchanged
-			angle = (angle > 27)?0:angle;
 			//invert degrees because minecraft's weird
-			angle = ((angle+14) > 27)?(angle+14)-27:angle+14;
-			//renderer.drawStringWithShadow(event.getMatrixStack(),"al: "+angle,100,150,0xFFFFFF);
+			angle=((angle-180)%360+360)%360;
+			//set compass picture to use depending on which angle is closest
+			angle=Math.round(angle/(360/27.0));
 			//get the compass image
 			mc.getTextureManager().bindTexture(new ResourceLocation(HUD5zig.MODID+":"+(int)angle+".png"));
 			//GuiUtils.drawTexturedModalRect(event.getMatrixStack(),width-30,0,98,98,30,30,0);
@@ -144,9 +132,7 @@ public class HUD{
 		int posY = (int)mc.player.getPosY();
 		int posZ = (int)mc.player.getPosZ();
 		int dir = (int)mc.player.rotationYaw;//getting direction
-		dir=Math.abs(dir);//prevent negatives
-		dir+=22;//magic number
-		dir%=360;//convert to value 0-360
+		dir=(dir%360+360+22)%360;//prevent negatives, get 0-359 angle, add magic number
 		dir/=45;//determine direction
 		//direction formatting
 		//hardcoded array v2, wish me luck
@@ -189,8 +175,7 @@ public class HUD{
 		angle = quads[q];
 		//renderer.drawStringWithShadow(event.getMatrixStack(),"Deg: "+Math.abs((mc.player.rotationYaw%360)),100,100,0xFFFFFF);
 		//renderer.drawStringWithShadow(event.getMatrixStack(),"Dir: "+angle,100,110,0xFFFFFF);
-		angle = Math.abs(mc.player.rotationYaw%360)-angle;//get difference between calculated angle and player angle
-		angle = (angle<0)?360+angle:angle;//if negative get coterminal angle
+		angle = ((mc.player.rotationYaw-angle)%360+360)%360;//get difference between calculated angle and player angle. takes care of negatives with (x%360+360)%360
 		return angle;
 	}
 }
