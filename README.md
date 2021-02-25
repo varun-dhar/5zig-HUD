@@ -20,7 +20,3 @@ We now have a [Github Discussions page](https://github.com/varun-dhar/5zig-HUD/d
 
 # TODO:
 Add custom colors for HUD
-
-~~Fix direction system~~
-
-Fix navigation system
