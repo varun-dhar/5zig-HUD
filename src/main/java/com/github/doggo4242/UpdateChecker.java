@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
@@ -27,6 +28,10 @@ public class UpdateChecker {
 	}
 	public static void updateNotif(boolean cInv)
 	{
+		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if(player == null){
+			return;
+		}
 		try {
 			URL url = new URL("https://raw.githubusercontent.com/doggo4242/5zig-HUD/main/version.json");
 			JsonParser jp = new JsonParser();
@@ -41,7 +46,7 @@ public class UpdateChecker {
 				updateMsg2.setStyle(updateMsg2.getStyle().setClickEvent(dlPage));
 				updateMsg.append(updateMsg2);
 				updateMsg.appendString(" to download the new version.");
-				Minecraft.getInstance().player.sendMessage(updateMsg, Util.DUMMY_UUID);
+				player.sendMessage(updateMsg, Util.DUMMY_UUID);
 				if(!cInv)
 				{
 					ClickEvent disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND,"5h uos");
@@ -51,17 +56,16 @@ public class UpdateChecker {
 					disableMessage2.setStyle(disableMessage2.getStyle().setClickEvent(disableClick));
 					disableMessage1.append(disableMessage2);
 					disableMessage1.appendString(" to disable these notifications.");
-					Minecraft.getInstance().player.sendMessage(disableMessage1, Util.DUMMY_UUID);
+					player.sendMessage(disableMessage1, Util.DUMMY_UUID);
 				}
 			}
 			else if(cInv){
-				Minecraft.getInstance().player.sendMessage(new StringTextComponent("You have the latest version of 5zig-HUD."),Util.DUMMY_UUID);
+				player.sendMessage(new StringTextComponent("You have the latest version of 5zig-HUD."),Util.DUMMY_UUID);
 			}
 			url.openStream().close();
 		} catch (IOException e) {
-			System.out.println("uh oh crash");
 			if(cInv) {
-				Minecraft.getInstance().player.sendMessage(new StringTextComponent("Could not check for updates."), Util.DUMMY_UUID);
+				player.sendMessage(new StringTextComponent("Could not check for updates."), Util.DUMMY_UUID);
 			}
 		}
 	}
