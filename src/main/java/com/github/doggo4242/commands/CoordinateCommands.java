@@ -1,6 +1,23 @@
+/*
+   Copyright 2021 doggo4242 Development
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.github.doggo4242.commands;
 
 import com.github.doggo4242.CommandParser;
+import com.github.doggo4242.StartupMessenger;
 import com.google.common.io.Resources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -33,7 +50,7 @@ public class CoordinateCommands {
 				URL defaultConfig = getClass().getResource("/com/github/doggo4242/5zigHUDCoords.cfg");
 				cfg.createNewFile();
 				FileUtils.copyURLToFile(defaultConfig,cfg);
-				System.out.println("Coordinate configuration not found. Creating new configuration.");
+				StartupMessenger.messages.add("The 5zigHUD coordinate configuration was not found. A new one was created.");
 			}
 			else {
 				BufferedReader reader = new BufferedReader(new FileReader("mods/5zigHUDCoords.cfg"));
@@ -49,7 +66,7 @@ public class CoordinateCommands {
 			}
 		}catch (IOException e)
 		{
-			System.out.println("Could not read config. Using default settings");
+			StartupMessenger.messages.add("The 5zigHUD coordinate configuration could not be read.");
 		}
 	}
 
@@ -64,12 +81,15 @@ public class CoordinateCommands {
 	}
 	@CommandParser.Command(help="Saves current coordinates. Usage: /5h saveCoords <name>",alias="scc")
 	public static IFormattableTextComponent saveCurrentCoords(String[] args){
-		ClientPlayerEntity player = Minecraft.getInstance().player;
-		if(player != null){
-			saveCoords(new String[]{null,args[1],String.valueOf((int) player.lastTickPosX),
-					String.valueOf((int) player.lastTickPosY), String.valueOf((int) player.lastTickPosZ)});
+		if(args.length == 2) {
+			ClientPlayerEntity player = Minecraft.getInstance().player;
+			if (player != null) {
+				saveCoords(new String[]{null, args[1], String.valueOf((int) player.lastTickPosX),
+						String.valueOf((int) player.lastTickPosY), String.valueOf((int) player.lastTickPosZ)});
+			}
+			return null;
 		}
-		return null;
+		return new StringTextComponent("Missing argument 'name'.");
 	}
 	@CommandParser.Command(help="Deletes the coordinates of a specified location. Usage: /5h delCoords <name>",alias="dc")
 	public static IFormattableTextComponent delCoords(String[] args){

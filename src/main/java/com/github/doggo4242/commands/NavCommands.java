@@ -1,8 +1,24 @@
+/*
+   Copyright 2021 doggo4242 Development
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.github.doggo4242.commands;
 
 import com.github.doggo4242.CommandParser;
-import com.github.doggo4242.HUD;
 import com.github.doggo4242.HUD5zig;
+import com.github.doggo4242.components.Navigation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -12,14 +28,14 @@ public class NavCommands {
 	public static IFormattableTextComponent nav(String[] args){
 		if(args.length == 2)
 		{
-			HUD.navLoc = CoordinateCommands.savedCoords.get(args[1]);
-			if(HUD.navLoc == null){
+			Navigation.location = CoordinateCommands.savedCoords.get(args[1]);
+			if(Navigation.location == null){
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
 		else if(args.length == 4)
 		{
-			HUD.navLoc = "X: "+args[1]+" Y: "+args[2]+" Z: "+args[3];
+			Navigation.location = "X: "+args[1]+" Y: "+args[2]+" Z: "+args[3];
 		}
 		else{
 			return new StringTextComponent("Invalid argument.");
@@ -30,8 +46,8 @@ public class NavCommands {
 	public static IFormattableTextComponent setNavX(String[] args){
 		if(args.length == 2) {
 			try {
-				HUD5zig.set.put("NavX",Integer.parseInt(args[1]));
-				return new StringTextComponent("Set navigation X to "+HUD5zig.set.get("NavX"));
+				HUD5zig.settings.put("NavX",Integer.parseInt(args[1]));
+				return new StringTextComponent("Set navigation X to "+HUD5zig.settings.get("NavX"));
 			}catch(NumberFormatException e)
 			{
 				return new StringTextComponent("Invalid argument.");
@@ -43,8 +59,8 @@ public class NavCommands {
 	public static IFormattableTextComponent setNavY(String[] args){
 		if(args.length == 2) {
 			try {
-				HUD5zig.set.put("NavY", Integer.parseInt(args[1]));
-				return new StringTextComponent("Set navigation Y to "+HUD5zig.set.get("NavY"));
+				HUD5zig.settings.put("NavY", Integer.parseInt(args[1]));
+				return new StringTextComponent("Set navigation Y to "+HUD5zig.settings.get("NavY"));
 			}catch(NumberFormatException e)
 			{
 				return new StringTextComponent("Invalid argument.");
@@ -54,7 +70,12 @@ public class NavCommands {
 	}
 	@CommandParser.Command(help="Stops navigation and hides compass.",alias="fn")
 	public static IFormattableTextComponent finishNav(String[] args){
-		HUD.navLoc = null;
+		Navigation.location = null;
 		return new StringTextComponent("Navigation ended.");
+	}
+	@CommandParser.Command(help="Toggles whether or not the navigation system navigates to the location of death.",alias="tntd")
+	public static IFormattableTextComponent toggleNavToDeath(String[] args){
+		HUD5zig.settings.put("NavToDeathEnabled", (Math.abs(HUD5zig.settings.get("NavToDeathEnabled"))==1)?0:1);
+		return new StringTextComponent("Set navigation to death coordinates to "+((Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1)?"on.":"off."));
 	}
 }
