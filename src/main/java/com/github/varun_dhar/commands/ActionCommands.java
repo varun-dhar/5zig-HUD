@@ -1,6 +1,23 @@
+/*
+   Copyright 2021 Varun Dhar
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.github.varun_dhar.commands;
 
 import com.github.varun_dhar.CommandParser;
+import com.github.varun_dhar.StartupMessenger;
 import com.google.common.io.Resources;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -26,7 +43,7 @@ public class ActionCommands {
 				URL defaultConfig = getClass().getResource("/com/github/varun_dhar/5zigHUDActions.cfg");
 				cfg.createNewFile();
 				FileUtils.copyURLToFile(defaultConfig,cfg);
-				System.out.println("Configuration not found. Creating new configuration.");
+				StartupMessenger.messages.add("The 5zigHUD action configuration was not found. A new one was created.");
 			}
 			else {
 				BufferedReader reader = new BufferedReader(new FileReader("mods/5zigHUDActions.cfg"));
@@ -42,7 +59,7 @@ public class ActionCommands {
 			}
 		}catch (IOException e)
 		{
-			System.out.println("Could not read action config.");
+			StartupMessenger.messages.add("The 5zigHUD action configuration could not be read.");
 		}
 	}
 	@CommandParser.Command(help="Adds an action. Usage: /5h addAction <action name> <action 1>:<action 2>...",alias="aa")
@@ -52,6 +69,9 @@ public class ActionCommands {
 			StringBuilder cmd = new StringBuilder();
 			for(int i = 2;i<args.length;i++)
 			{
+				if(args[i].equals(args[1])){
+					return new StringTextComponent("Actions cannot be recursive.");
+				}
 				cmd.append(args[i]).append(" ");
 			}
 			actions.put(args[1],cmd.toString().split(":"));

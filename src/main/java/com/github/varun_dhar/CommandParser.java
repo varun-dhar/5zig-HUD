@@ -1,9 +1,26 @@
+/*
+   Copyright 2021 Varun Dhar
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.github.varun_dhar;
 
 import com.github.varun_dhar.commands.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.network.play.client.CChatMessagePacket;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -33,6 +50,7 @@ public class CommandParser {
 
 	public static HashMap<String, Function<String[], IFormattableTextComponent>> commands = new HashMap<>();
 	public static HashMap<String,String> commandHelp = new HashMap<>();
+	public static HashMap<String,String> commandAliases = new HashMap<>();
 
 	private final static String prefix = "5h";
 
@@ -42,6 +60,7 @@ public class CommandParser {
 		registerClassCommands(NavCommands.class);
 		registerClassCommands(new MacroCommands());
 		registerClassCommands(new CoordinateCommands());
+		registerClassCommands(new ActionCommands());
 	}
 
 	public void registerClassCommands(Object o){
@@ -54,33 +73,36 @@ public class CommandParser {
 		for(Method method : c.getDeclaredMethods()){
 			if(method.isAnnotationPresent(Command.class)){
 				Annotation annotation = method.getAnnotation(Command.class);
-				Class<? extends Annotation> type = annotation.annotationType();
-				for(Method property : type.getDeclaredMethods()){
-					if(property.getName().equals("help")){
-						try {
-							commandHelp.put(method.getName(), (String)property.invoke(annotation, (Object[]) (null)));
-						}catch(Exception e){
-							e.printStackTrace();
+				if(annotation != null) {
+					try {
+						MethodHandle handle = lookup.unreflect(method);
+						if(handle.type().equals(methodType)) {
+							Class<? extends Annotation> type = annotation.annotationType();
+							for (Method property : type.getDeclaredMethods()) {
+								if (property.getName().equals("help")) {
+									try {
+										commandHelp.put(method.getName(), (String) property.invoke(annotation, (Object[]) (null)));
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								} else if (property.getName().equals("alias")) {
+									try {
+										commandAliases.put((String) property.invoke(annotation, (Object[]) (null)), method.getName());
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
+
+							CallSite site = LambdaMetafactory.metafactory(lookup,
+									"apply", MethodType.methodType(Function.class), handle.type().generic(), handle,handle.type());
+							MethodHandle invoker = site.getTarget();
+							Function<String[],IFormattableTextComponent> fn = (Function<String[], IFormattableTextComponent>)invoker.invoke();
+							commands.put(method.getName(), fn);
 						}
-					}else if(property.getName().equals("alias")){
-						try {
-							MacroCommands.macros.put((String)property.invoke(annotation, (Object[]) (null)),prefix+" "+method.getName());
-						}catch(Exception e){
-							e.printStackTrace();
-						}
+					} catch (Throwable t){
+						t.printStackTrace();
 					}
-				}
-				try {
-					MethodHandle handle = lookup.unreflect(method);
-					if(handle.type().equals(methodType)) {
-						CallSite site = LambdaMetafactory.metafactory(lookup,
-								"apply", MethodType.methodType(Function.class), handle.type().generic(), handle,handle.type());
-						MethodHandle invoker = site.getTarget();
-						Function<String[],IFormattableTextComponent> fn = (Function<String[], IFormattableTextComponent>)invoker.invoke();
-						commands.put(method.getName(), fn);
-					}
-				} catch (Throwable t){
-					t.printStackTrace();
 				}
 			}
 		}
@@ -91,24 +113,24 @@ public class CommandParser {
 	{
 		//find and run commands/macros
 		String msg = event.getMessage();
+		String[] args = msg.split(" ");
 		if(ActionCommands.actions.containsKey(msg)){
 			event.setCanceled(true);
 			String[] actions = ActionCommands.actions.get(msg);
 			ClientPlayerEntity player = Minecraft.getInstance().player;
-			if(player == null){
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			if(player == null || connection == null){
 				return;
 			}
 			for(String action : actions){
-				player.sendMessage(new StringTextComponent(action),PlayerEntity.getUUID(player.getGameProfile()));
+				connection.sendPacket(new CChatMessagePacket(action));
 			}
 			return;
 		}
-		if(MacroCommands.macros.containsKey(msg))
+		if(MacroCommands.macros.containsKey(args[0]))
 		{
-			String macro = msg.split(" ")[0];
-			event.setMessage(MacroCommands.macros.get(macro)+msg.substring(msg.indexOf(macro)+macro.length()));
+			event.setMessage(MacroCommands.macros.get(args[0]));
 			msg = event.getMessage();
-			System.out.println(event.getMessage());
 		}
 		msg = (msg.charAt(0) == '/')?msg.substring(1):msg;
 		if(msg.startsWith(prefix))
@@ -116,12 +138,14 @@ public class CommandParser {
 			event.setCanceled(true);
 			Minecraft.getInstance().ingameGUI.getChatGUI().addToSentMessages(event.getMessage());
 			msg = (msg.length()>=3)?msg.substring(3):msg;//remove "5h "
-			String[] args = msg.split(" ");
+			args = msg.split(" ");
+			if(commandAliases.containsKey(args[0])){
+				args[0] = commandAliases.get(args[0]);
+			}
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if(player == null){
 				return;
 			}
-			player.sendMessage(new StringTextComponent(String.join(" ",commands.keySet())),Util.DUMMY_UUID);
 			Function<String[],IFormattableTextComponent> command = commands.get(args[0]);
 			if(command == null)
 			{
@@ -132,6 +156,7 @@ public class CommandParser {
 			if(component != null){
 				player.sendMessage(component,Util.DUMMY_UUID);
 			}
+			player.sendMessage(new StringTextComponent(String.join(" ",commandAliases.keySet())),Util.DUMMY_UUID);
 		}
 	}
 }

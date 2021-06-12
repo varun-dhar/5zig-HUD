@@ -1,3 +1,19 @@
+/*
+   Copyright 2021 Varun Dhar
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package com.github.varun_dhar.commands;
 
 import com.github.varun_dhar.CommandParser;
@@ -8,15 +24,15 @@ import net.minecraft.util.text.StringTextComponent;
 public class HUDCommands {
 	@CommandParser.Command(help="Shows/hides HUD.",alias="th")
 	public static IFormattableTextComponent toggleHUD(String[] args){
-		HUD5zig.set.put("HUD-Enabled",(Math.abs(HUD5zig.set.get("HUD-Enabled")) == 1)?0:1);
-		return new StringTextComponent("HUD toggled to "+((HUD5zig.set.get("HUD-Enabled") == 0)?"off.":"on."));
+		HUD5zig.settings.put("HUD-Enabled",(Math.abs(HUD5zig.settings.get("HUD-Enabled")) == 1)?0:1);
+		return new StringTextComponent("HUD toggled to "+((HUD5zig.settings.get("HUD-Enabled") == 0)?"off.":"on."));
 	}
 	@CommandParser.Command(help="Sets the x-coordinate of the HUD. Usage: /5h setHUDX <X value>",alias="shx")
 	public static IFormattableTextComponent setHUDX(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.set.put("HUD-X",Integer.parseInt(args[1]));
-				return new StringTextComponent("Set HUD X to "+HUD5zig.set.get("HUD-X"));
+				HUD5zig.settings.put("HUD-X",Integer.parseInt(args[1]));
+				return new StringTextComponent("Set HUD X to "+HUD5zig.settings.get("HUD-X"));
 			}catch(NumberFormatException e)
 			{
 				return new StringTextComponent("Invalid argument.");
@@ -28,8 +44,8 @@ public class HUDCommands {
 	public static IFormattableTextComponent setHUDY(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.set.put("HUD-Y",Integer.parseInt(args[1]));
-				return new StringTextComponent("Set HUD Y to "+HUD5zig.set.get("HUD-Y"));
+				HUD5zig.settings.put("HUD-Y",Integer.parseInt(args[1]));
+				return new StringTextComponent("Set HUD Y to "+HUD5zig.settings.get("HUD-Y"));
 			}catch(NumberFormatException e)
 			{
 				return new StringTextComponent("Invalid argument.");
@@ -41,7 +57,7 @@ public class HUDCommands {
 	public static IFormattableTextComponent setHUDAlignment(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.set.put("HUD-Alignment",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("HUD-Alignment",Integer.parseInt(args[1]));
 				return new StringTextComponent("Successfully updated HUD alignment.");
 			}catch(NumberFormatException e){
 				return new StringTextComponent("Invalid argument.");
@@ -51,15 +67,15 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Shows/hides armor pane.",alias="tap")
 	public static IFormattableTextComponent toggleArmorPane(String[] args){
-		HUD5zig.set.put("ArmorEnabled",(Math.abs(HUD5zig.set.get("ArmorEnabled")) == 1)?0:1);
-		return new StringTextComponent("Armor pane toggled to "+((HUD5zig.set.get("ArmorEnabled") == 0)?"off.":"on."));
+		HUD5zig.settings.put("ArmorEnabled",(Math.abs(HUD5zig.settings.get("ArmorEnabled")) == 1)?0:1);
+		return new StringTextComponent("Armor pane toggled to "+((HUD5zig.settings.get("ArmorEnabled") == 0)?"off.":"on."));
 	}
 	@CommandParser.Command(help="Sets the x-coordinate of the armor pane. Usage: /5h setArmorX <X value>",alias="sax")
 	public static IFormattableTextComponent setArmorX(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.set.put("ArmorX",Integer.parseInt(args[1]));
-				return new StringTextComponent("Set armor Y to "+HUD5zig.set.get("ArmorX"));
+				HUD5zig.settings.put("ArmorX",Integer.parseInt(args[1]));
+				return new StringTextComponent("Set armor Y to "+HUD5zig.settings.get("ArmorX"));
 			}catch(NumberFormatException e)
 			{
 				return new StringTextComponent("Invalid argument.");
@@ -71,8 +87,8 @@ public class HUDCommands {
 	public static IFormattableTextComponent setArmorY(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.set.put("ArmorY",Integer.parseInt(args[1]));
-				return new StringTextComponent("Set armor Y to "+HUD5zig.set.get("ArmorY"));
+				HUD5zig.settings.put("ArmorY",Integer.parseInt(args[1]));
+				return new StringTextComponent("Set armor Y to "+HUD5zig.settings.get("ArmorY"));
 			}catch(NumberFormatException e)
 			{
 				return new StringTextComponent("Invalid argument.");
@@ -84,7 +100,7 @@ public class HUDCommands {
 	public static IFormattableTextComponent setArmorAlignment(String[] args){
 		if(args.length==2){
 			try {
-				HUD5zig.set.put("ArmorAlignment",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("ArmorAlignment",Integer.parseInt(args[1]));
 				return new StringTextComponent("Successfully updated armor alignment.");
 			}catch(NumberFormatException e)
 			{
@@ -95,14 +111,14 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Shows/hides death timer.",alias="tt")
 	public static IFormattableTextComponent toggleTimer(String[] args){
-		HUD5zig.set.put("DeathTimerEnabled",(Math.abs(HUD5zig.set.get("DeathTimerEnabled")) == 1)?0:1);
-		return new StringTextComponent("Timer toggled to "+((HUD5zig.set.get("DeathTimerEnabled") == 0)?"off.":"on."));
+		HUD5zig.settings.put("DeathTimerEnabled",(Math.abs(HUD5zig.settings.get("DeathTimerEnabled")) == 1)?0:1);
+		return new StringTextComponent("Timer toggled to "+((HUD5zig.settings.get("DeathTimerEnabled") == 0)?"off.":"on."));
 	}
 	@CommandParser.Command(help="Sets the alignment of the death timer. Usage: /5h setDeathTimerAlignment <0|1>",alias="sdta")
 	public static IFormattableTextComponent setDeathTimerAlignment(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.set.put("DeathTimerAlignment",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("DeathTimerAlignment",Integer.parseInt(args[1]));
 				return new StringTextComponent("Successfully updated death timer alignment.");
 			}catch(NumberFormatException e)
 			{
