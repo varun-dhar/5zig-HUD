@@ -57,7 +57,11 @@ public class HUDCommands {
 	public static IFormattableTextComponent setHUDAlignment(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.settings.put("HUD-Alignment",Integer.parseInt(args[1]));
+				int n = Integer.parseInt(args[1]);
+				if(n != 0 && n != 1){
+					return new StringTextComponent("Invalid argument.");
+				}
+				HUD5zig.settings.put("HUD-Alignment",n);
 				return new StringTextComponent("Successfully updated HUD alignment.");
 			}catch(NumberFormatException e){
 				return new StringTextComponent("Invalid argument.");
@@ -100,7 +104,11 @@ public class HUDCommands {
 	public static IFormattableTextComponent setArmorAlignment(String[] args){
 		if(args.length==2){
 			try {
-				HUD5zig.settings.put("ArmorAlignment",Integer.parseInt(args[1]));
+				int n = Integer.parseInt(args[1]);
+				if(n != 0 && n != 1){
+					return new StringTextComponent("Invalid argument.");
+				}
+				HUD5zig.settings.put("ArmorAlignment",n);
 				return new StringTextComponent("Successfully updated armor alignment.");
 			}catch(NumberFormatException e)
 			{
@@ -118,7 +126,11 @@ public class HUDCommands {
 	public static IFormattableTextComponent setDeathTimerAlignment(String[] args){
 		if(args.length==2) {
 			try {
-				HUD5zig.settings.put("DeathTimerAlignment",Integer.parseInt(args[1]));
+				int n = Integer.parseInt(args[1]);
+				if(n != 0 && n != 1){
+					return new StringTextComponent("Invalid argument.");
+				}
+				HUD5zig.settings.put("DeathTimerAlignment",n);
 				return new StringTextComponent("Successfully updated death timer alignment.");
 			}catch(NumberFormatException e)
 			{

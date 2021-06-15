@@ -27,6 +27,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 // TODO add custom colors
 
@@ -56,21 +57,27 @@ public class HUDRenderer {
 
 		for(HUDComponent component : components){
 			component.initComponent();
+			if(component.disabled){
+				continue;
+			}
 			HUDComponentText[] text = component.componentText;
 			if(text != null) {
-				for (int i = 0; i < text.length; i++) {
-					StringBuilder builder = new StringBuilder().append(text[i]);
-					for (int j = i + 1; j < text.length && text[j].x == text[i].x && text[j].y == text[i].y; j++) {
-						builder.append(" ").append(text[j]);
+				for (int i = 0; i < text.length;) {
+					StringBuilder builder = new StringBuilder().append(text[i].text);
+					int j = i + 1;
+					for (; j < text.length && text[j].x == text[i].x && text[j].y == text[i].y; j++) {
+						builder.append(" ").append(text[j].text);
 					}
 					renderer.drawStringWithShadow(event.getMatrixStack(), builder.toString(), text[i].x, text[i].y, 0xFFFFFF);
+					i=j;
 				}
 			}
-			HUDComponentImage[] images = component.componentImages;
-			if(images != null){
-				for(HUDComponentImage image : images){
-					mc.getTextureManager().bindTexture(image.image);
-					GuiUtils.drawInscribedRect(event.getMatrixStack(), image.x,image.y,image.width,image.height,image.width,image.height);
+			if(component.componentImages != null){
+				for(HUDComponentImage image : component.componentImages){
+					if(image.image != null) {
+						mc.getTextureManager().bindTexture(image.image);
+						GuiUtils.drawInscribedRect(event.getMatrixStack(), image.x, image.y, image.width, image.height, image.width, image.height);
+					}
 				}
 			}
 		}

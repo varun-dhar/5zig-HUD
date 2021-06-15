@@ -16,14 +16,13 @@
 
 package com.github.varun_dhar;
 
+import com.github.varun_dhar.commands.CoordinateCommands;
+import com.github.varun_dhar.commands.NavCommands;
 import com.github.varun_dhar.components.DeathTimer;
-import com.github.varun_dhar.components.Navigation;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.util.Date;
 
 public class DeathHandler
 {
@@ -41,9 +40,11 @@ public class DeathHandler
 	public void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
 		if(event.getPlayer().equals(Minecraft.getInstance().player)){
 			DeathTimer.dead = false;
-			DeathTimer.deathTime = new Date().getTime();
+			DeathTimer.deathTime = System.currentTimeMillis();
+			CoordinateCommands.saveCoords(new String[]{null, "lastDeath", String.valueOf(DeathTimer.deathCoords[0]),
+					String.valueOf(DeathTimer.deathCoords[1]), String.valueOf(DeathTimer.deathCoords[2])});
 			if(Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1){
-				Navigation.location = String.format("X: %d Y: %d Z: %d", DeathTimer.deathCoords[0], DeathTimer.deathCoords[1], DeathTimer.deathCoords[2]);
+				NavCommands.nav(new String[]{null,"lastDeath"});
 			}
 		}
 	}

@@ -32,10 +32,13 @@ public class ArmorPane extends HUDComponent {
 	public ArmorPane(){
 		componentImages = null;
 		componentText = new HUDComponentText[5];
+		for(int i = 0;i<componentText.length;i++){
+			componentText[i] = new HUDComponentText();
+		}
 	}
 	@Override
 	public void updateComponent() {
-		if(player == null){
+		if((disabled = player == null || Math.abs(HUD5zig.settings.get("HUD-Enabled")) != 1)){
 			return;
 		}
 		//set alignment and position
@@ -45,11 +48,11 @@ public class ArmorPane extends HUDComponent {
 		ItemStack[] armor = {player.getItemStackFromSlot(EquipmentSlotType.HEAD),
 				player.getItemStackFromSlot(EquipmentSlotType.CHEST),player.getItemStackFromSlot(EquipmentSlotType.LEGS),
 				player.getItemStackFromSlot(EquipmentSlotType.FEET)};
-		componentText[0].text = red+TextFormatting.UNDERLINE+"Armor:";
-		for(int i = 1;i<componentText.length;i++) {
-			//check for empty slots and calculate damage in percent, otherwise say no armor
+		componentText[0].text = red+TextFormatting.UNDERLINE+"Armor:"+TextFormatting.RESET;
+		for(int i = 0;i<armor.length;i++) {
+			//check for empty slots and calculate percent damage, otherwise say no armor
 			int t = (!armor[i].isEmpty()&&armor[i].getMaxDamage()!=0)?(int)Math.ceil(100-(((float)armor[i].getDamage()/armor[i].getMaxDamage())*100)):0;
-			componentText[i].text = (t>0)?red+armorLetters[i]+white+"> "+t+"%":"No "+armorStr[i];
+			componentText[i+1].text = (t>0)?red+armorLetters[i]+white+"> "+t+"%":"No "+armorStr[i];
 		}
 		x = (x == -1 || ((x + defYSpacing * componentText.length) > scrWidth && alignment) || (x > scrWidth && !alignment)) ? defXPos : x;
 		if(alignment && (y == -1 || (y + defYSpacing * componentText.length) > scrHeight)){

@@ -25,13 +25,13 @@ public abstract class HUDComponent {
 	protected HUDComponentText[] componentText;
 	protected HUDComponentImage[] componentImages;
 	protected boolean alignment;
+	protected boolean disabled = false;
 	protected final int defYSpacing = 10;
 	protected final int defXPos = 3;
-	protected int scrWidth;
-	protected int scrHeight;
+	protected static int scrWidth;
+	protected static int scrHeight;
 	protected static final Minecraft mc = Minecraft.getInstance();
-	protected static final FontRenderer renderer = mc.fontRenderer;
-	protected static final ClientPlayerEntity player = mc.player;
+	protected static ClientPlayerEntity player = mc.player;
 	protected static final String white = TextFormatting.WHITE.toString();
 	protected static final String gray = TextFormatting.GRAY.toString();
 	protected static final String red = TextFormatting.RED.toString();
@@ -47,6 +47,7 @@ public abstract class HUDComponent {
 	public void initComponent(){
 		scrWidth = mc.getMainWindow().getScaledWidth();
 		scrHeight = mc.getMainWindow().getScaledHeight();
+		player = mc.player;
 		updateComponent();
 	}
 	public abstract void updateComponent();

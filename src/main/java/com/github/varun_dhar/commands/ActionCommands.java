@@ -69,12 +69,15 @@ public class ActionCommands {
 			StringBuilder cmd = new StringBuilder();
 			for(int i = 2;i<args.length;i++)
 			{
-				if(args[i].equals(args[1])){
-					return new StringTextComponent("Actions cannot be recursive.");
-				}
 				cmd.append(args[i]).append(" ");
 			}
-			actions.put(args[1],cmd.toString().split(":"));
+			String[] action = cmd.toString().split(":");
+			for(String subAction : action){
+				if(subAction.equals(args[1])){
+					return new StringTextComponent("Actions cannot be recursive.");
+				}
+			}
+			actions.put(args[1],action);
 			return new StringTextComponent((writeActions())?"Action saved successfully.":"Error saving action. Please try again later.");
 		}
 		return new StringTextComponent("Invalid argument(s).");

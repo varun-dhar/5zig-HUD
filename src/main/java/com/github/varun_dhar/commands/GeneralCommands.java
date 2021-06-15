@@ -19,7 +19,6 @@ package com.github.varun_dhar.commands;
 import com.github.varun_dhar.CommandParser;
 import com.github.varun_dhar.HUD5zig;
 import com.github.varun_dhar.UpdateChecker;
-import com.github.varun_dhar.components.DeathTimer;
 import com.google.common.io.Resources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -46,7 +45,8 @@ public class GeneralCommands {
 	}
 	@CommandParser.Command(help="Dumps death coordinates to chat (dumps 0,0,0 if none exist).",alias="dd")
 	public static IFormattableTextComponent dumpDeath(String[] args){
-		return new StringTextComponent(String.format("X: %d Y: %d Z: %d", DeathTimer.deathCoords[0], DeathTimer.deathCoords[1], DeathTimer.deathCoords[2]));
+		CoordinateCommands.getCoords(new String[]{null,"lastDeath"});
+		return null;
 	}
 	@CommandParser.Command(help="Checks for 5zig-HUD updates.",alias="cfu")
 	public static IFormattableTextComponent checkForUpdates(String[] args){
