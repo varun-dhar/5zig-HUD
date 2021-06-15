@@ -22,6 +22,11 @@ public class HUDComponentImage {
 	public ResourceLocation image;
 	public int height,width,x,y;
 
+	public HUDComponentImage(){
+		image = null;
+		height = width = x = y = 0;
+	}
+
 	public HUDComponentImage(String path, int height, int width, int x, int y) {
 		this(new ResourceLocation(path),height,width,x,y);
 	}

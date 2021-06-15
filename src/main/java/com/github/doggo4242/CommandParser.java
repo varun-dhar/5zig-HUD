@@ -19,12 +19,14 @@ package com.github.doggo4242;
 import com.github.doggo4242.commands.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.play.client.CChatMessagePacket;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.ClientChatEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.lang.annotation.Annotation;
@@ -38,6 +40,8 @@ import java.lang.invoke.LambdaMetafactory;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // TODO: add actions
 
@@ -51,8 +55,8 @@ public class CommandParser {
 	public static HashMap<String, Function<String[], IFormattableTextComponent>> commands = new HashMap<>();
 	public static HashMap<String,String> commandHelp = new HashMap<>();
 	public static HashMap<String,String> commandAliases = new HashMap<>();
-
 	private final static String prefix = "5h";
+	private static final Pattern commandPattern = Pattern.compile("/?"+prefix+" (\\w+)( .+)?");
 
 	public CommandParser(){
 		registerClassCommands(GeneralCommands.class);
@@ -117,13 +121,16 @@ public class CommandParser {
 		if(ActionCommands.actions.containsKey(msg)){
 			event.setCanceled(true);
 			String[] actions = ActionCommands.actions.get(msg);
-			ClientPlayerEntity player = Minecraft.getInstance().player;
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			if(player == null || connection == null){
+			if(connection == null){
 				return;
 			}
 			for(String action : actions){
-				connection.sendPacket(new CChatMessagePacket(action));
+				if(commandPattern.matcher(action).matches()){
+					MinecraftForge.EVENT_BUS.post(new ClientChatEvent(action));
+				}else{
+					connection.sendPacket(new CChatMessagePacket(action));
+				}
 			}
 			return;
 		}
@@ -132,21 +139,25 @@ public class CommandParser {
 			event.setMessage(MacroCommands.macros.get(args[0]));
 			msg = event.getMessage();
 		}
-		msg = (msg.charAt(0) == '/')?msg.substring(1):msg;
-		if(msg.startsWith(prefix))
+		Matcher matcher = commandPattern.matcher(msg);
+		if(matcher.matches())
 		{
 			event.setCanceled(true);
 			Minecraft.getInstance().ingameGUI.getChatGUI().addToSentMessages(event.getMessage());
-			msg = (msg.length()>=3)?msg.substring(3):msg;//remove "5h "
-			args = msg.split(" ");
-			if(commandAliases.containsKey(args[0])){
-				args[0] = commandAliases.get(args[0]);
+			String cmd = matcher.group(1);
+			if(commandAliases.containsKey(cmd)){
+				cmd = commandAliases.get(cmd);
+			}
+			if(matcher.groupCount() == 2) {
+				args = matcher.group(2).trim().split(" ");
+			}else{
+				args = null;
 			}
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if(player == null){
 				return;
 			}
-			Function<String[],IFormattableTextComponent> command = commands.get(args[0]);
+			Function<String[],IFormattableTextComponent> command = commands.get(cmd);
 			if(command == null)
 			{
 				player.sendMessage(new StringTextComponent("Unknown command or invalid argument. Run /5h help for a list of commands"), Util.DUMMY_UUID);
@@ -156,7 +167,6 @@ public class CommandParser {
 			if(component != null){
 				player.sendMessage(component,Util.DUMMY_UUID);
 			}
-			player.sendMessage(new StringTextComponent(String.join(" ",commandAliases.keySet())),Util.DUMMY_UUID);
 		}
 	}
 }

@@ -28,10 +28,13 @@ public class HUD extends HUDComponent {
 	public HUD(){
 		componentImages = null;
 		componentText = new HUDComponentText[5];
+		for(int i = 0;i<componentText.length;i++){
+			componentText[i] = new HUDComponentText();
+		}
 	}
 	@Override
 	public void updateComponent() {
-		if(player == null){
+		if((disabled = player == null || Math.abs(HUD5zig.settings.get("HUD-Enabled")) != 1)){
 			return;
 		}
 		//set alignment and position
