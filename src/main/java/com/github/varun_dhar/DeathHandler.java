@@ -41,10 +41,10 @@ public class DeathHandler
 		if(event.getPlayer().equals(Minecraft.getInstance().player)){
 			DeathTimer.dead = false;
 			DeathTimer.deathTime = System.currentTimeMillis();
-			CoordinateCommands.saveCoords(new String[]{null, "lastDeath", String.valueOf(DeathTimer.deathCoords[0]),
+			CoordinateCommands.saveCoords(new String[]{"lastDeath", String.valueOf(DeathTimer.deathCoords[0]),
 					String.valueOf(DeathTimer.deathCoords[1]), String.valueOf(DeathTimer.deathCoords[2])});
 			if(Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1){
-				NavCommands.nav(new String[]{null,"lastDeath"});
+				NavCommands.nav(new String[]{"lastDeath"});
 			}
 		}
 	}

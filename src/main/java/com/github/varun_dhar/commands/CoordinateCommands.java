@@ -72,19 +72,19 @@ public class CoordinateCommands {
 
 	@CommandParser.Command(help="Saves specified coordinates. Usage: /5h saveCoords <name> <X> <Y> <Z>",alias="sc")
 	public static IFormattableTextComponent saveCoords(String[] args){
-		if(args.length==5)
+		if(args != null && args.length==4)
 		{
-			savedCoords.put(args[1],"X: "+args[2]+" Y: "+args[3]+" Z: "+args[4]);
+			savedCoords.put(args[0],"X: "+args[1]+" Y: "+args[2]+" Z: "+args[3]);
 			return new StringTextComponent((writeCoords())?"Coordinates saved successfully.":"Error saving coordinates. Please try again later.");
 		}
 		return new StringTextComponent("Invalid argument(s)");
 	}
 	@CommandParser.Command(help="Saves current coordinates. Usage: /5h saveCoords <name>",alias="scc")
 	public static IFormattableTextComponent saveCurrentCoords(String[] args){
-		if(args.length == 2) {
+		if(args != null && args.length == 1) {
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if (player != null) {
-				saveCoords(new String[]{null, args[1], String.valueOf((int) player.lastTickPosX),
+				saveCoords(new String[]{args[0], String.valueOf((int) player.lastTickPosX),
 						String.valueOf((int) player.lastTickPosY), String.valueOf((int) player.lastTickPosZ)});
 			}
 			return null;
@@ -93,9 +93,9 @@ public class CoordinateCommands {
 	}
 	@CommandParser.Command(help="Deletes the coordinates of a specified location. Usage: /5h delCoords <name>",alias="dc")
 	public static IFormattableTextComponent delCoords(String[] args){
-		if(args.length==2)
+		if(args != null && args.length==1)
 		{
-			if(savedCoords.remove(args[1]) != null && writeCoords())
+			if(savedCoords.remove(args[0]) != null && writeCoords())
 			{
 				return new StringTextComponent("Coordinates deleted successfully.");
 			}
@@ -108,9 +108,9 @@ public class CoordinateCommands {
 	}
 	@CommandParser.Command(help="Gets the coordinates of a specified location. Usage: /5h getCoords <location name>",alias="gc")
 	public static IFormattableTextComponent getCoords(String[] args){
-		if(args.length==2)
+		if(args != null && args.length==1)
 		{
-			String coords = savedCoords.get(args[1]);
+			String coords = savedCoords.get(args[0]);
 			return new StringTextComponent((coords!=null)?coords:"Invalid location.");
 		}
 		return new StringTextComponent("Invalid argument(s).");

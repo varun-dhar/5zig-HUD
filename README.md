@@ -1,7 +1,7 @@
 # 5zig-HUD
-A simple HUD and mapping mod for 1.16.3 and 1.16.4 somewhat inspired by [The5zigMod](https://github.com/5zig-reborn/The-5zig-Mod).
+A simple HUD and mapping mod for 1.16.3-1.16.5 somewhat inspired by [The5zigMod](https://github.com/5zig-reborn/The-5zig-Mod).
 
-Includes coordinates, FPS, direction, armor durability, after-death item despawn timer, death location coordinates, coordinate mapping, macros, and a navigation system, as well as commands for managing these features.
+Includes coordinates, FPS, direction, armor durability, after-death item despawn timer, death location coordinates, coordinate mapping, macros, a navigation system, and actions, as well as commands for managing these features.
 
 # Demo
 ![HUD Demo](https://github.com/varun-dhar/5zig-HUD/raw/main/demo.png)

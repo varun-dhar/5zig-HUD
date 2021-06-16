@@ -64,29 +64,29 @@ public class ActionCommands {
 	}
 	@CommandParser.Command(help="Adds an action. Usage: /5h addAction <action name> <action 1>:<action 2>...",alias="aa")
 	public static IFormattableTextComponent addAction(String[] args){
-		if(args.length>=3)
+		if(args != null && args.length>=3)
 		{
 			StringBuilder cmd = new StringBuilder();
-			for(int i = 2;i<args.length;i++)
+			for(int i = 1;i<args.length;i++)
 			{
 				cmd.append(args[i]).append(" ");
 			}
 			String[] action = cmd.toString().split(":");
 			for(String subAction : action){
-				if(subAction.equals(args[1])){
+				if(subAction.equals(args[0])){
 					return new StringTextComponent("Actions cannot be recursive.");
 				}
 			}
-			actions.put(args[1],action);
+			actions.put(args[0],action);
 			return new StringTextComponent((writeActions())?"Action saved successfully.":"Error saving action. Please try again later.");
 		}
 		return new StringTextComponent("Invalid argument(s).");
 	}
 	@CommandParser.Command(help="Deletes an action. Usage: /5h delAction <action name>",alias="da")
 	public static IFormattableTextComponent delAction(String[] args){
-		if(args.length==2)
+		if(args != null && args.length==1)
 		{
-			if(actions.remove(args[1]) != null && writeActions())
+			if(actions.remove(args[0]) != null && writeActions())
 			{
 				return new StringTextComponent("Action deleted successfully.");
 			}
