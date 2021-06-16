@@ -45,7 +45,7 @@ public class GeneralCommands {
 	}
 	@CommandParser.Command(help="Dumps death coordinates to chat (dumps 0,0,0 if none exist).",alias="dd")
 	public static IFormattableTextComponent dumpDeath(String[] args){
-		CoordinateCommands.getCoords(new String[]{null,"lastDeath"});
+		CoordinateCommands.getCoords(new String[]{"lastDeath"});
 		return null;
 	}
 	@CommandParser.Command(help="Checks for 5zig-HUD updates.",alias="cfu")

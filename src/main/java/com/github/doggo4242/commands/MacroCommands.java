@@ -69,23 +69,23 @@ public class MacroCommands {
 	}
 	@CommandParser.Command(help="Adds a macro. Usage: /5h addMacro <macro name> <macro value>",alias="am")
 	public static IFormattableTextComponent addMacro(String[] args){
-		if(args.length>=3)
+		if(args != null && args.length>=2)
 		{
 			StringBuilder cmd = new StringBuilder();
-			for(int i = 2;i<args.length;i++)
+			for(int i = 1;i<args.length;i++)
 			{
 				cmd.append(args[i]).append(" ");
 			}
-			macros.put(args[1],cmd.toString());
+			macros.put(args[0],cmd.toString());
 			return new StringTextComponent((writeMacros())?"Macro saved successfully.":"Error saving macro. Please try again later.");
 		}
 		return new StringTextComponent("Invalid argument(s).");
 	}
 	@CommandParser.Command(help="Deletes a macro. Usage: /5h delMacro <macro name>",alias="dm")
 	public static IFormattableTextComponent delMacro(String[] args){
-		if(args.length==2)
+		if(args != null && args.length==1)
 		{
-			if(macros.remove(args[1]) != null && writeMacros())
+			if(macros.remove(args[0]) != null && writeMacros())
 			{
 				return new StringTextComponent("Macro deleted successfully.");
 			}

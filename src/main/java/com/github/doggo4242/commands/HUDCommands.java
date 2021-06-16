@@ -29,9 +29,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the x-coordinate of the HUD. Usage: /5h setHUDX <X value>",alias="shx")
 	public static IFormattableTextComponent setHUDX(String[] args){
-		if(args.length==2) {
+		if(args != null && args.length==1) {
 			try {
-				HUD5zig.settings.put("HUD-X",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("HUD-X",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set HUD X to "+HUD5zig.settings.get("HUD-X"));
 			}catch(NumberFormatException e)
 			{
@@ -42,9 +42,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the HUD. Usage: /5h setHUDY <Y value>",alias="shy")
 	public static IFormattableTextComponent setHUDY(String[] args){
-		if(args.length==2) {
+		if(args != null && args.length==1) {
 			try {
-				HUD5zig.settings.put("HUD-Y",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("HUD-Y",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set HUD Y to "+HUD5zig.settings.get("HUD-Y"));
 			}catch(NumberFormatException e)
 			{
@@ -55,9 +55,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the alignment of the HUD. Usage: /5h setHUDAlignment <0|1>",alias="sha")
 	public static IFormattableTextComponent setHUDAlignment(String[] args){
-		if(args.length==2) {
+		if(args != null && args.length==1) {
 			try {
-				int n = Integer.parseInt(args[1]);
+				int n = Integer.parseInt(args[0]);
 				if(n != 0 && n != 1){
 					return new StringTextComponent("Invalid argument.");
 				}
@@ -76,9 +76,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the x-coordinate of the armor pane. Usage: /5h setArmorX <X value>",alias="sax")
 	public static IFormattableTextComponent setArmorX(String[] args){
-		if(args.length==2) {
+		if(args != null && args.length==1) {
 			try {
-				HUD5zig.settings.put("ArmorX",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("ArmorX",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set armor Y to "+HUD5zig.settings.get("ArmorX"));
 			}catch(NumberFormatException e)
 			{
@@ -89,9 +89,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the armor pane. Usage: /5h setArmorY <Y value>",alias="say")
 	public static IFormattableTextComponent setArmorY(String[] args){
-		if(args.length==2) {
+		if(args != null && args.length==1) {
 			try {
-				HUD5zig.settings.put("ArmorY",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("ArmorY",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set armor Y to "+HUD5zig.settings.get("ArmorY"));
 			}catch(NumberFormatException e)
 			{
@@ -102,9 +102,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the alignment of the armor pane. Usage: /5h setArmorAlignment <0|1>",alias="saa")
 	public static IFormattableTextComponent setArmorAlignment(String[] args){
-		if(args.length==2){
+		if(args != null && args.length==1){
 			try {
-				int n = Integer.parseInt(args[1]);
+				int n = Integer.parseInt(args[0]);
 				if(n != 0 && n != 1){
 					return new StringTextComponent("Invalid argument.");
 				}
@@ -124,9 +124,9 @@ public class HUDCommands {
 	}
 	@CommandParser.Command(help="Sets the alignment of the death timer. Usage: /5h setDeathTimerAlignment <0|1>",alias="sdta")
 	public static IFormattableTextComponent setDeathTimerAlignment(String[] args){
-		if(args.length==2) {
+		if(args != null && args.length==1) {
 			try {
-				int n = Integer.parseInt(args[1]);
+				int n = Integer.parseInt(args[0]);
 				if(n != 0 && n != 1){
 					return new StringTextComponent("Invalid argument.");
 				}

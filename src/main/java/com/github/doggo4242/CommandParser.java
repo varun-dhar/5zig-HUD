@@ -126,7 +126,8 @@ public class CommandParser {
 				return;
 			}
 			for(String action : actions){
-				if(commandPattern.matcher(action).matches()){
+				if(commandPattern.matcher(action).matches() || MacroCommands.macros.containsKey(action) ||
+						ActionCommands.actions.containsKey(action)){
 					MinecraftForge.EVENT_BUS.post(new ClientChatEvent(action));
 				}else{
 					connection.sendPacket(new CChatMessagePacket(action));
@@ -136,7 +137,7 @@ public class CommandParser {
 		}
 		if(MacroCommands.macros.containsKey(args[0]))
 		{
-			event.setMessage(MacroCommands.macros.get(args[0]));
+			event.setMessage(MacroCommands.macros.get(args[0]+msg.substring(args[0].length())));
 			msg = event.getMessage();
 		}
 		Matcher matcher = commandPattern.matcher(msg);
@@ -148,11 +149,13 @@ public class CommandParser {
 			if(commandAliases.containsKey(cmd)){
 				cmd = commandAliases.get(cmd);
 			}
-			if(matcher.groupCount() == 2) {
-				args = matcher.group(2).trim().split(" ");
+			String tmp = matcher.group(2);
+			if(tmp != null) {
+				args = tmp.trim().split(" ");
 			}else{
 				args = null;
 			}
+
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if(player == null){
 				return;
@@ -167,6 +170,8 @@ public class CommandParser {
 			if(component != null){
 				player.sendMessage(component,Util.DUMMY_UUID);
 			}
+			if(args != null)
+				player.sendMessage(new StringTextComponent("cmd: "+cmd+" "+String.join(" ",args)),Util.DUMMY_UUID);
 		}
 	}
 }

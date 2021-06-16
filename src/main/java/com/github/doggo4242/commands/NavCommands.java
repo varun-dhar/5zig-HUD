@@ -26,16 +26,16 @@ public class NavCommands {
 
 	@CommandParser.Command(help="Navigates to location from current location. Usage: /5h nav <X> <Y> <Z> ",alias="n")
 	public static IFormattableTextComponent nav(String[] args){
-		if(args.length == 2)
+		if(args != null && args.length == 1)
 		{
-			Navigation.location = CoordinateCommands.savedCoords.get(args[1]);
+			Navigation.location = CoordinateCommands.savedCoords.get(args[0]);
 			if(Navigation.location == null){
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		else if(args.length == 4)
+		else if(args != null && args.length == 3)
 		{
-			Navigation.location = "X: "+args[1]+" Y: "+args[2]+" Z: "+args[3];
+			Navigation.location = "X: "+args[0]+" Y: "+args[1]+" Z: "+args[2];
 		}
 		else{
 			return new StringTextComponent("Invalid argument.");
@@ -44,9 +44,9 @@ public class NavCommands {
 	}
 	@CommandParser.Command(help="Sets the x-coordinate of the navigation compass. Usage: /5h setNavX <X>",alias="snx")
 	public static IFormattableTextComponent setNavX(String[] args){
-		if(args.length == 2) {
+		if(args != null && args.length == 1) {
 			try {
-				HUD5zig.settings.put("NavX",Integer.parseInt(args[1]));
+				HUD5zig.settings.put("NavX",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set navigation X to "+HUD5zig.settings.get("NavX"));
 			}catch(NumberFormatException e)
 			{
@@ -57,9 +57,9 @@ public class NavCommands {
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the navigation compass. Usage: /5h setNavY <Y>",alias="sny")
 	public static IFormattableTextComponent setNavY(String[] args){
-		if(args.length == 2) {
+		if(args != null && args.length == 1) {
 			try {
-				HUD5zig.settings.put("NavY", Integer.parseInt(args[1]));
+				HUD5zig.settings.put("NavY", Integer.parseInt(args[0]));
 				return new StringTextComponent("Set navigation Y to "+HUD5zig.settings.get("NavY"));
 			}catch(NumberFormatException e)
 			{
