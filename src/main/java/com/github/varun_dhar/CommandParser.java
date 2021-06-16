@@ -170,8 +170,6 @@ public class CommandParser {
 			if(component != null){
 				player.sendMessage(component,Util.DUMMY_UUID);
 			}
-			if(args != null)
-				player.sendMessage(new StringTextComponent("cmd: "+cmd+" "+String.join(" ",args)),Util.DUMMY_UUID);
 		}
 	}
 }
