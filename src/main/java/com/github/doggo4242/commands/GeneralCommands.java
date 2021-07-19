@@ -31,7 +31,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GeneralCommands {
 	@CommandParser.Command(help="Dumps current coordinates to chat.",alias="d")
@@ -45,8 +44,7 @@ public class GeneralCommands {
 	}
 	@CommandParser.Command(help="Dumps death coordinates to chat (dumps 0,0,0 if none exist).",alias="dd")
 	public static IFormattableTextComponent dumpDeath(String[] args){
-		CoordinateCommands.getCoords(new String[]{"lastDeath"});
-		return null;
+		return CoordinateCommands.getCoords(new String[]{"lastDeath"});
 	}
 	@CommandParser.Command(help="Checks for 5zig-HUD updates.",alias="cfu")
 	public static IFormattableTextComponent checkForUpdates(String[] args){
@@ -60,8 +58,8 @@ public class GeneralCommands {
 			String contents = Resources.toString(Resources.getResource("/com/github/doggo4242/5zigHUD.cfg"), Charset.defaultCharset());
 			contents = contents.substring(0,contents.indexOf('\n',contents.lastIndexOf('#'))+1);
 			writer.write(contents);
-			for (Map.Entry<String, Integer> entry : HUD5zig.settings.entrySet()) {
-				writer.write(String.format("%s=%d", entry.getKey(), entry.getValue()));
+			for (HashMap.Entry<String, Integer> entry : HUD5zig.settings.entrySet()) {
+				writer.write(String.format("%s=%d\n", entry.getKey(), entry.getValue()));
 			}
 			writer.close();
 		}catch(IOException e)
@@ -73,7 +71,7 @@ public class GeneralCommands {
 	@CommandParser.Command(help="Turns update notifications on or off.",alias="tu")
 	public static IFormattableTextComponent toggleUpdater(String[] args){
 		HUD5zig.settings.put("UpdaterEnabled",Math.abs((HUD5zig.settings.get("UpdaterEnabled") == 1)?0:1));
-		return new StringTextComponent("HUD toggled to "+((HUD5zig.settings.get("UpdaterEnabled") == 0)?"off.":"on."));
+		return new StringTextComponent("Updater toggled to "+((HUD5zig.settings.get("UpdaterEnabled") == 0)?"off.":"on."));
 	}
 	@CommandParser.Command(help="Shows this message.",alias="h")
 	public static IFormattableTextComponent help(String[] args){
@@ -83,7 +81,7 @@ public class GeneralCommands {
 			helpStr.append("/5h ").append(entry.getKey()).append(" ").append(entry.getValue()).append('\n');
 		}
 		helpStr.append("For more information, visit the ");
-		StringTextComponent wikiLink = new StringTextComponent("wiki\n");
+		StringTextComponent wikiLink = new StringTextComponent("wiki.");
 		ClickEvent openWiki = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://github.com/doggo4242/5zig-HUD/wiki");
 		wikiLink.setStyle(wikiLink.getStyle().setUnderlined(true));
 		wikiLink.setStyle(wikiLink.getStyle().setClickEvent(openWiki));

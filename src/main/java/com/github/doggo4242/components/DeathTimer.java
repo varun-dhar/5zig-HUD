@@ -19,12 +19,14 @@ package com.github.doggo4242.components;
 import com.github.doggo4242.HUD5zig;
 import com.github.doggo4242.HUDComponent;
 import com.github.doggo4242.HUDComponentText;
+import net.minecraft.world.DimensionType;
 
 import java.util.concurrent.TimeUnit;
 
 public class DeathTimer extends HUDComponent {
 	public static boolean dead = false;
 	public static int[] deathCoords = new int[3];
+	public static DimensionType dimension;
 	public static long deathTime = 0;
 	private final static TimeUnit tUnitMs = TimeUnit.MILLISECONDS;
 	private final int defVerYPos = 126;
@@ -40,12 +42,18 @@ public class DeathTimer extends HUDComponent {
 
 	@Override
 	public void updateComponent() {
+		boolean nearby = false;
+		//enable if < 5m since death, alive, and not close to death location
 		if ((disabled = !(!dead && (System.currentTimeMillis() - deathTime) < tUnitMs.convert(5, TimeUnit.MINUTES)
-				&& Math.abs(HUD5zig.settings.get("DeathTimerEnabled")) == 1)))//5m till despawn
-		{
+				&& Math.abs(HUD5zig.settings.get("DeathTimerEnabled")) == 1
+				&& !(nearby = (Math.abs(player.lastTickPosX-deathCoords[0]) < 10 && Math.abs(player.lastTickPosZ-deathCoords[2]) < 10
+				&& player.worldClient.getDimensionType().isSame(dimension)))))) {
+			if(nearby){
+				deathTime = System.currentTimeMillis();
+			}
 			return;
 		}
-		alignment = Math.abs(HUD5zig.settings.get("DeathTimerAlignment")) == 1;
+		boolean alignment = Math.abs(HUD5zig.settings.get("DeathTimerAlignment")) == 1;
 		//get seconds without minutes
 		int sec = (int) ((tUnitMs.convert(5, TimeUnit.MINUTES) -
 				(System.currentTimeMillis() - deathTime)) % tUnitMs.convert(1, TimeUnit.MINUTES) /

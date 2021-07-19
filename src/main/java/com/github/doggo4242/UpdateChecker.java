@@ -27,12 +27,12 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.ClickEvent;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
 public class UpdateChecker {
-	public static void updateNotif(boolean cInv)
-	{
+	public static void updateNotif(boolean cInv) {
 		ClientPlayerEntity player = Minecraft.getInstance().player;
 		if(player == null){
 			return;
@@ -40,10 +40,10 @@ public class UpdateChecker {
 		try {
 			URL url = new URL("https://raw.githubusercontent.com/doggo4242/5zig-HUD/main/version.json");
 			JsonParser jp = new JsonParser();
-			JsonElement root = jp.parse(new InputStreamReader(url.openStream()));
+			InputStream stream = url.openStream();
+			JsonElement root = jp.parse(new InputStreamReader(stream));
 			JsonObject rootObj = root.getAsJsonObject();
-			if(rootObj.get("version").getAsInt() > HUD5zig.version)
-			{
+			if(rootObj.get("version").getAsInt() > HUD5zig.version) {
 				ClickEvent dlPage = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/the5zig-hud/files");
 				StringTextComponent updateMsg = new StringTextComponent("An update is available for 5zig-HUD. Click ");
 				StringTextComponent updateMsg2 = new StringTextComponent("here");
@@ -52,8 +52,7 @@ public class UpdateChecker {
 				updateMsg.append(updateMsg2);
 				updateMsg.appendString(" to download the new version.");
 				player.sendMessage(updateMsg, Util.DUMMY_UUID);
-				if(!cInv)
-				{
+				if(!cInv) {
 					ClickEvent disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND,"5h uos");
 					StringTextComponent disableMessage1 = new StringTextComponent("Click ");
 					StringTextComponent disableMessage2 = new StringTextComponent("here");
@@ -63,11 +62,10 @@ public class UpdateChecker {
 					disableMessage1.appendString(" to disable these notifications.");
 					player.sendMessage(disableMessage1, Util.DUMMY_UUID);
 				}
-			}
-			else if(cInv){
+			} else if(cInv){
 				player.sendMessage(new StringTextComponent("You have the latest version of 5zig-HUD."),Util.DUMMY_UUID);
 			}
-			url.openStream().close();
+			stream.close();
 		} catch (IOException e) {
 			if(cInv) {
 				player.sendMessage(new StringTextComponent("Could not check for updates."), Util.DUMMY_UUID);

@@ -20,17 +20,14 @@ import com.github.doggo4242.HUD5zig;
 import com.github.doggo4242.HUDComponent;
 import com.github.doggo4242.HUDComponentImage;
 import com.github.doggo4242.HUDComponentText;
+import com.github.doggo4242.commands.CoordinateCommands;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Navigation extends HUDComponent {
-	public static String location = null;
-	private final static Pattern navCoords = Pattern.compile("X: (-?\\d+) Y: -?\\d+ Z: (-?\\d+)");
-
+	public static int[] location = null;
+	public static int dimensionID;
 	public Navigation() {
 		componentText = new HUDComponentText[1];
 		componentText[0] = new HUDComponentText();
@@ -46,50 +43,46 @@ public class Navigation extends HUDComponent {
 			return;
 		}
 		//extract x and z values
-		Matcher m = navCoords.matcher(location);
-		if (m.matches()) {
-			final int defNavX = scrWidth / 2 + 110;
-			final int defNavY = scrHeight - 40;
+		final int defNavX = scrWidth / 2 + 110;
+		final int defNavY = scrHeight - 40;
 
-			int x = Integer.parseInt(m.group(1));
-			int z = Integer.parseInt(m.group(2));
-			//get the angle between the two points
-			double a = Math.abs(player.getPosX() - x);
-			double b = Math.abs(player.getPosZ() - z);
-			double angle = Math.toDegrees(Math.atan(b / a));
-			//find quadrant, use to determine exact angle
-			//270+angle +x, +z
-			//90-angle -x, +z
-			//270-angle +x, -z
-			//90+angle -x, -z
-			int q = (player.getPosX() > x) ? -90 : 270;//if -x
-			q *= (player.getPosZ() > z) ? -1 : 1;//if -z
-			angle = (q < 0) ? -(angle + q) : angle + q;
-			//get difference between calculated angle and player angle. takes care of negatives with (x%360+360)%360
-			angle = ((player.rotationYaw - angle) % 360 + 360) % 360;
-			componentText[0].text = (((int) angle > 180) ? (int) angle - 360 : (int) angle) + "\u00b0";
-			//invert degrees
-			angle = ((angle - 180) % 360 + 360) % 360;
-			//set compass picture to use depending on which angle is closest
-			angle = Math.round(angle / (360 / 27.0));
+		int x = location[0];
+		int z = location[2];
+		//get the angle between the two points
+		double a = Math.abs(player.getPosX() - x);
+		double b = Math.abs(player.getPosZ() - z);
+		double angle = Math.toDegrees(Math.atan(b / a));
+		//find quadrant, use to determine exact angle
+		//270+angle +x, +z
+		//90-angle -x, +z
+		//270-angle +x, -z
+		//90+angle -x, -z
+		int q = (player.getPosX() > x) ? -90 : 270;//if -x
+		q *= (player.getPosZ() > z) ? -1 : 1;//if -z
+		angle = (q < 0) ? -(angle + q) : angle + q;
+		//get difference between calculated angle and player angle. takes care of negatives with (x%360+360)%360
+		angle = ((player.rotationYaw - angle) % 360 + 360) % 360;
+		componentText[0].text = (((int) angle > 180) ? (int) angle - 360 : (int) angle) + "\u00b0";
+		//invert degrees
+		angle = ((angle - 180) % 360 + 360) % 360;
+		//set compass picture to use depending on which angle is closest
+		angle = Math.round(angle / (360 / 27.0));
 
-			//load the compass image
-			componentImages[0].image = new ResourceLocation(String.format("%s:%d.png", HUD5zig.MODID, (int) angle));
-			//set x and y of compass and text
-			int compX = (HUD5zig.settings.get("NavX") == -1) ? defNavX : HUD5zig.settings.get("NavX");
-			int compY = (HUD5zig.settings.get("NavY") == -1) ? defNavY : HUD5zig.settings.get("NavY");
-			componentImages[0].x = compX;
-			componentImages[0].y = compY;
-			componentText[0].x = compX + 5;
-			componentText[0].y = compY + 30;
+		//load the compass image
+		componentImages[0].image = new ResourceLocation(String.format("%s:nav%d.png", HUD5zig.MODID, (int) angle));
+		//set x and y of compass and text
+		int compX = (HUD5zig.settings.get("NavX") == -1) ? defNavX : HUD5zig.settings.get("NavX");
+		int compY = (HUD5zig.settings.get("NavY") == -1) ? defNavY : HUD5zig.settings.get("NavY");
+		componentImages[0].x = compX;
+		componentImages[0].y = compY;
+		componentText[0].x = compX + 5;
+		componentText[0].y = compY + 30;
 
-			//check if close enough to stop navigation
-			if (Math.abs(x - player.getPosX()) < 10 && Math.abs(z - player.getPosZ()) < 10) {
-				player.sendMessage(new StringTextComponent("Arrived."), Util.DUMMY_UUID);
-				location = null;
-			}
-		} else {
-			player.sendMessage(new StringTextComponent("Error parsing coordinates. Please re-enter them and try again."), Util.DUMMY_UUID);
+		int currentDimension = CoordinateCommands.getDimension(player.worldClient.getDimensionKey());
+		//check if close enough to stop navigation
+		if (Math.abs(x - player.getPosX()) < 10 && Math.abs(z - player.getPosZ()) < 10
+				&& (dimensionID == -1 || currentDimension == dimensionID)) {
+			player.sendMessage(new StringTextComponent("Arrived."), Util.DUMMY_UUID);
 			location = null;
 		}
 	}
