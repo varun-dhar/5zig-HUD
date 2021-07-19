@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class StartupMessenger {
 	public static ArrayList<String> messages = new ArrayList<>();
-	public static boolean firstRun = true;
+	private static boolean firstRun = true;
 	@SubscribeEvent
 	public void onInitialPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event){
 		if(!firstRun){

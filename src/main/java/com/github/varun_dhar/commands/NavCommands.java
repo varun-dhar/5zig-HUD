@@ -24,20 +24,26 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class NavCommands {
 
-	@CommandParser.Command(help="Navigates to location from current location. Usage: /5h nav <X> <Y> <Z> ",alias="n")
+	@CommandParser.Command(help="Navigates to location from current location. Usage: /5h nav <X> <Y> <Z> or /5h nav <location>",alias="n")
 	public static IFormattableTextComponent nav(String[] args){
-		if(args != null && args.length == 1)
-		{
-			Navigation.location = CoordinateCommands.savedCoords.get(args[0]);
-			if(Navigation.location == null){
+		if(args != null && args.length == 1) {
+			Coordinate coordinate = CoordinateCommands.getCoordsI(args[0]);
+			if(coordinate == null){
+				return new StringTextComponent("No such location exists.");
+			}
+			Navigation.location = coordinate.coords;
+			Navigation.dimensionID = coordinate.dimensionID;
+		} else if(args != null && args.length == 3) {
+			int[] coords = new int[3];
+			try {
+				for (int i = 0; i < coords.length; i++) {
+					coords[i] = Integer.parseInt(args[i+1]);
+				}
+			}catch(NumberFormatException e){
 				return new StringTextComponent("Invalid argument.");
 			}
-		}
-		else if(args != null && args.length == 3)
-		{
-			Navigation.location = "X: "+args[0]+" Y: "+args[1]+" Z: "+args[2];
-		}
-		else{
+			Navigation.location = coords;
+		} else{
 			return new StringTextComponent("Invalid argument.");
 		}
 		return new StringTextComponent("Starting navigation.");
@@ -48,8 +54,7 @@ public class NavCommands {
 			try {
 				HUD5zig.settings.put("NavX",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set navigation X to "+HUD5zig.settings.get("NavX"));
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
@@ -61,8 +66,7 @@ public class NavCommands {
 			try {
 				HUD5zig.settings.put("NavY", Integer.parseInt(args[0]));
 				return new StringTextComponent("Set navigation Y to "+HUD5zig.settings.get("NavY"));
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
@@ -73,7 +77,7 @@ public class NavCommands {
 		Navigation.location = null;
 		return new StringTextComponent("Navigation ended.");
 	}
-	@CommandParser.Command(help="Toggles whether or not the navigation system navigates to the location of death.",alias="tntd")
+	@CommandParser.Command(help="Toggles whether or not the navigation system navigates to the location of death upon dying.",alias="tntd")
 	public static IFormattableTextComponent toggleNavToDeath(String[] args){
 		HUD5zig.settings.put("NavToDeathEnabled", (Math.abs(HUD5zig.settings.get("NavToDeathEnabled"))==1)?0:1);
 		return new StringTextComponent("Set navigation to death coordinates to "+((Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1)?"on.":"off."));

@@ -38,7 +38,7 @@ public class HUD extends HUDComponent {
 			return;
 		}
 		//set alignment and position
-		alignment = Math.abs(HUD5zig.settings.get("HUD-Alignment")) == 1;
+		boolean alignment = Math.abs(HUD5zig.settings.get("HUD-Alignment")) == 1;
 		int x = HUD5zig.settings.get("HUD-X");
 		int y = HUD5zig.settings.get("HUD-Y");
 		int dir = (int)player.rotationYaw;//getting direction

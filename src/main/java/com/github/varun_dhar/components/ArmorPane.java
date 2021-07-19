@@ -38,11 +38,11 @@ public class ArmorPane extends HUDComponent {
 	}
 	@Override
 	public void updateComponent() {
-		if((disabled = player == null || Math.abs(HUD5zig.settings.get("HUD-Enabled")) != 1)){
+		if((disabled = player == null || Math.abs(HUD5zig.settings.get("ArmorEnabled")) != 1)){
 			return;
 		}
 		//set alignment and position
-		alignment = Math.abs(HUD5zig.settings.get("ArmorAlignment")) == 1;
+		boolean alignment = Math.abs(HUD5zig.settings.get("ArmorAlignment")) == 1;
 		int x = HUD5zig.settings.get("ArmorX");
 		int y = HUD5zig.settings.get("ArmorY");
 		ItemStack[] armor = {player.getItemStackFromSlot(EquipmentSlotType.HEAD),

@@ -28,6 +28,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
@@ -42,8 +43,6 @@ import java.util.HashMap;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-// TODO: add actions
 
 public class CommandParser {
 	@Retention(RetentionPolicy.RUNTIME)
@@ -117,7 +116,7 @@ public class CommandParser {
 	{
 		//find and run commands/macros
 		String msg = event.getMessage();
-		String[] args = msg.split(" ");
+		String arg = StringUtils.substringBefore(msg," ");
 		if(ActionCommands.actions.containsKey(msg)){
 			event.setCanceled(true);
 			String[] actions = ActionCommands.actions.get(msg);
@@ -125,19 +124,22 @@ public class CommandParser {
 			if(connection == null){
 				return;
 			}
+			NewChatGui chatGui = Minecraft.getInstance().ingameGUI.getChatGUI();
 			for(String action : actions){
-				if(commandPattern.matcher(action).matches() || MacroCommands.macros.containsKey(action) ||
+				if(commandPattern.matcher(action).matches() ||
+						MacroCommands.macros.containsKey(StringUtils.substringBefore(action," ")) ||
 						ActionCommands.actions.containsKey(action)){
 					MinecraftForge.EVENT_BUS.post(new ClientChatEvent(action));
 				}else{
 					connection.sendPacket(new CChatMessagePacket(action));
+					chatGui.addToSentMessages(action);
 				}
 			}
 			return;
 		}
-		if(MacroCommands.macros.containsKey(args[0]))
+		if(MacroCommands.macros.containsKey(arg))
 		{
-			event.setMessage(MacroCommands.macros.get(args[0]+msg.substring(args[0].length())));
+			event.setMessage(MacroCommands.macros.get(arg)+msg.substring(arg.length()));
 			msg = event.getMessage();
 		}
 		Matcher matcher = commandPattern.matcher(msg);
@@ -150,10 +152,9 @@ public class CommandParser {
 				cmd = commandAliases.get(cmd);
 			}
 			String tmp = matcher.group(2);
+			String[] args = null;
 			if(tmp != null) {
-				args = tmp.trim().split(" ");
-			}else{
-				args = null;
+				args = StringUtils.split(tmp.trim());
 			}
 
 			ClientPlayerEntity player = Minecraft.getInstance().player;

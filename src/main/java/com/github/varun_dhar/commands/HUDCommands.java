@@ -33,12 +33,11 @@ public class HUDCommands {
 			try {
 				HUD5zig.settings.put("HUD-X",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set HUD X to "+HUD5zig.settings.get("HUD-X"));
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'X'.");
+		return new StringTextComponent("Missing/invalid argument 'X'.");
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the HUD. Usage: /5h setHUDY <Y value>",alias="shy")
 	public static IFormattableTextComponent setHUDY(String[] args){
@@ -46,12 +45,11 @@ public class HUDCommands {
 			try {
 				HUD5zig.settings.put("HUD-Y",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set HUD Y to "+HUD5zig.settings.get("HUD-Y"));
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'Y'.");
+		return new StringTextComponent("Missing/invalid argument 'Y'.");
 	}
 	@CommandParser.Command(help="Sets the alignment of the HUD. Usage: /5h setHUDAlignment <0|1>",alias="sha")
 	public static IFormattableTextComponent setHUDAlignment(String[] args){
@@ -67,7 +65,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'alignment'");
+		return new StringTextComponent("Missing/invalid argument 'alignment'");
 	}
 	@CommandParser.Command(help="Shows/hides armor pane.",alias="tap")
 	public static IFormattableTextComponent toggleArmorPane(String[] args){
@@ -79,13 +77,12 @@ public class HUDCommands {
 		if(args != null && args.length==1) {
 			try {
 				HUD5zig.settings.put("ArmorX",Integer.parseInt(args[0]));
-				return new StringTextComponent("Set armor Y to "+HUD5zig.settings.get("ArmorX"));
-			}catch(NumberFormatException e)
-			{
+				return new StringTextComponent("Set armor X to "+HUD5zig.settings.get("ArmorX"));
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'X'");
+		return new StringTextComponent("Missing/invalid argument 'X'");
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the armor pane. Usage: /5h setArmorY <Y value>",alias="say")
 	public static IFormattableTextComponent setArmorY(String[] args){
@@ -93,12 +90,11 @@ public class HUDCommands {
 			try {
 				HUD5zig.settings.put("ArmorY",Integer.parseInt(args[0]));
 				return new StringTextComponent("Set armor Y to "+HUD5zig.settings.get("ArmorY"));
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'Y'");
+		return new StringTextComponent("Missing/invalid argument 'Y'");
 	}
 	@CommandParser.Command(help="Sets the alignment of the armor pane. Usage: /5h setArmorAlignment <0|1>",alias="saa")
 	public static IFormattableTextComponent setArmorAlignment(String[] args){
@@ -110,12 +106,11 @@ public class HUDCommands {
 				}
 				HUD5zig.settings.put("ArmorAlignment",n);
 				return new StringTextComponent("Successfully updated armor alignment.");
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'alignment'");
+		return new StringTextComponent("Missing/invalid argument 'alignment'");
 	}
 	@CommandParser.Command(help="Shows/hides death timer.",alias="tt")
 	public static IFormattableTextComponent toggleTimer(String[] args){
@@ -132,8 +127,7 @@ public class HUDCommands {
 				}
 				HUD5zig.settings.put("DeathTimerAlignment",n);
 				return new StringTextComponent("Successfully updated death timer alignment.");
-			}catch(NumberFormatException e)
-			{
+			}catch(NumberFormatException e){
 				return new StringTextComponent("Invalid argument.");
 			}
 		}

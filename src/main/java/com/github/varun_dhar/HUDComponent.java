@@ -18,20 +18,18 @@ package com.github.varun_dhar;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
 
 public abstract class HUDComponent {
 	protected HUDComponentText[] componentText;
 	protected HUDComponentImage[] componentImages;
-	protected boolean alignment;
 	protected boolean disabled = false;
 	protected final int defYSpacing = 10;
 	protected final int defXPos = 3;
 	protected static int scrWidth;
 	protected static int scrHeight;
 	protected static final Minecraft mc = Minecraft.getInstance();
-	protected static ClientPlayerEntity player = mc.player;
+	protected static ClientPlayerEntity player;
 	protected static final String white = TextFormatting.WHITE.toString();
 	protected static final String gray = TextFormatting.GRAY.toString();
 	protected static final String red = TextFormatting.RED.toString();

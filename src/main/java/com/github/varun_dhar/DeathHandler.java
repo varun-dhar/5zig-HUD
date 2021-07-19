@@ -24,25 +24,24 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class DeathHandler
-{
+public class DeathHandler {
+	private static final Minecraft mc = Minecraft.getInstance();
 	@SubscribeEvent
 	public void onDeath(final TickEvent.PlayerTickEvent event){
-		if(!event.player.isAlive() && event.player.equals(Minecraft.getInstance().player))
-		{
+		if(!event.player.isAlive() && event.player.equals(mc.player)) {
 			DeathTimer.dead = true;
-			DeathTimer.deathCoords[0]=(int)Minecraft.getInstance().player.lastTickPosX;
-			DeathTimer.deathCoords[1]=(int)Minecraft.getInstance().player.lastTickPosY;
-			DeathTimer.deathCoords[2]=(int)Minecraft.getInstance().player.lastTickPosZ;
+			DeathTimer.deathCoords[0]=(int)mc.player.lastTickPosX;
+			DeathTimer.deathCoords[1]=(int)mc.player.lastTickPosY;
+			DeathTimer.deathCoords[2]=(int)mc.player.lastTickPosZ;
+			DeathTimer.dimension = mc.player.worldClient.getDimensionType();
 		}
 	}
 	@SubscribeEvent
 	public void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
-		if(event.getPlayer().equals(Minecraft.getInstance().player)){
+		if(event.getPlayer().equals(mc.player)){
 			DeathTimer.dead = false;
 			DeathTimer.deathTime = System.currentTimeMillis();
-			CoordinateCommands.saveCoords(new String[]{"lastDeath", String.valueOf(DeathTimer.deathCoords[0]),
-					String.valueOf(DeathTimer.deathCoords[1]), String.valueOf(DeathTimer.deathCoords[2])});
+			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.deathCoords,mc.player.worldClient.getDimensionKey());
 			if(Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1){
 				NavCommands.nav(new String[]{"lastDeath"});
 			}

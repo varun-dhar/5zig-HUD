@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -46,17 +47,15 @@ public class HUD5zig//setup stuff
 	public HUD5zig() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 	}
-	private void clientSetup(FMLClientSetupEvent event)
-	{
+	private void clientSetup(FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(new HUDRenderer());
 		MinecraftForge.EVENT_BUS.register(new CommandParser());
 		MinecraftForge.EVENT_BUS.register(new StartupMessenger());
+		MinecraftForge.EVENT_BUS.register(new DeathHandler());
 		readSettings();
-		if(Math.abs(settings.get("DeathTimerEnabled"))==1) {//enable death timer if specified in config
-			MinecraftForge.EVENT_BUS.register(new DeathHandler());
-		}
 	}
-	private void readSettings(){//read settings into array
+	//read settings into map
+	private void readSettings(){
 		try {
 			File cfg = new File("mods/5zigHUD.cfg");
 			if(!cfg.isFile())
@@ -64,6 +63,9 @@ public class HUD5zig//setup stuff
 				URL defaultConfig = getClass().getResource("/com/github/varun_dhar/5zigHUD.cfg");
 				cfg.createNewFile();
 				FileUtils.copyURLToFile(defaultConfig,cfg);
+				for(String op : confOps){
+					settings.put(op,-1);
+				}
 				StartupMessenger.messages.add(
 						"The configuration for 5zigHUD was not found. A new one was created with default settings");
 			}
@@ -73,7 +75,7 @@ public class HUD5zig//setup stuff
 					s = s.trim();
 					if(s.charAt(0) == '#')
 						continue;
-					String[] fields = s.split("=");
+					String[] fields = StringUtils.split(s,"=");
 					if(fields.length == 2){
 						fields[0] = fields[0].trim();
 						fields[1] = fields[1].trim();
@@ -86,6 +88,9 @@ public class HUD5zig//setup stuff
 					}
 				}
 				reader.close();
+				if (!settings.containsKey("DVDEnabled")) {
+					settings.put("DVDEnabled", 0);
+				}
 				if (settings.size() < confOps.size()) {
 					StartupMessenger.messages.add(
 							"The configuration for 5zigHUD is invalid. Default settings for the invalid/missing fields were used.");
