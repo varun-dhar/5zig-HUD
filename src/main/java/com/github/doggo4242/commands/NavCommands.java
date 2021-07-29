@@ -16,9 +16,8 @@
 
 package com.github.doggo4242.commands;
 
-import com.github.doggo4242.CommandParser;
 import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.components.Navigation;
+import com.github.doggo4242.HUD.components.Navigation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -27,12 +26,11 @@ public class NavCommands {
 	@CommandParser.Command(help="Navigates to location from current location. Usage: /5h nav <X> <Y> <Z> or /5h nav <location>",alias="n")
 	public static IFormattableTextComponent nav(String[] args){
 		if(args != null && args.length == 1) {
-			Coordinate coordinate = CoordinateCommands.getCoordsI(args[0]);
-			if(coordinate == null){
+			int[] coords = CoordinateCommands.getCoordsI(args[0]);
+			if(coords == null){
 				return new StringTextComponent("No such location exists.");
 			}
-			Navigation.location = coordinate.coords;
-			Navigation.dimensionID = coordinate.dimensionID;
+			Navigation.navigate(coords,CoordinateCommands.getDimension());
 		} else if(args != null && args.length == 3) {
 			int[] coords = new int[3];
 			try {
@@ -42,9 +40,9 @@ public class NavCommands {
 			}catch(NumberFormatException e){
 				return new StringTextComponent("Invalid argument.");
 			}
-			Navigation.location = coords;
+			Navigation.navigate(coords,CoordinateCommands.getDimension());
 		} else{
-			return new StringTextComponent("Invalid argument.");
+			return new StringTextComponent("Invalid/missing argument(s).");
 		}
 		return new StringTextComponent("Starting navigation.");
 	}
@@ -58,7 +56,7 @@ public class NavCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument <X>.");
+		return new StringTextComponent("Invalid/missing argument <X>.");
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the navigation compass. Usage: /5h setNavY <Y>",alias="sny")
 	public static IFormattableTextComponent setNavY(String[] args){
@@ -70,11 +68,11 @@ public class NavCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument <Y>.");
+		return new StringTextComponent("Invalid/missing argument <Y>.");
 	}
 	@CommandParser.Command(help="Stops navigation and hides compass.",alias="fn")
 	public static IFormattableTextComponent finishNav(String[] args){
-		Navigation.location = null;
+		Navigation.endNavigation();
 		return new StringTextComponent("Navigation ended.");
 	}
 	@CommandParser.Command(help="Toggles whether or not the navigation system navigates to the location of death upon dying.",alias="tntd")

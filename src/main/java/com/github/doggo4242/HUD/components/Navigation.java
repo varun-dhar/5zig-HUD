@@ -14,27 +14,37 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.components;
+package com.github.doggo4242.HUD.components;
 
 import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.HUDComponent;
-import com.github.doggo4242.HUDComponentImage;
-import com.github.doggo4242.HUDComponentText;
+import com.github.doggo4242.HUD.HUDComponent;
+import com.github.doggo4242.HUD.HUDComponentImage;
+import com.github.doggo4242.HUD.HUDComponentText;
 import com.github.doggo4242.commands.CoordinateCommands;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 
 public class Navigation extends HUDComponent {
-	public static int[] location = null;
-	public static int dimensionID;
+	private static int[] location = null;
+	private static int dimensionID;
 	public Navigation() {
+		super();
 		componentText = new HUDComponentText[1];
 		componentText[0] = new HUDComponentText();
 		componentImages = new HUDComponentImage[1];
 		componentImages[0] = new HUDComponentImage();
 		componentImages[0].width = 30;
 		componentImages[0].height = 30;
+	}
+
+	public static void navigate(int[] loc, int dimension){
+		location = loc;
+		dimensionID = dimension;
+	}
+
+	public static void endNavigation(){
+		location = null;
 	}
 
 	@Override
@@ -64,8 +74,8 @@ public class Navigation extends HUDComponent {
 		angle = ((player.rotationYaw - angle) % 360 + 360) % 360;
 		componentText[0].text = (((int) angle > 180) ? (int) angle - 360 : (int) angle) + "\u00b0";
 		//invert degrees
-		angle = ((angle - 180) % 360 + 360) % 360;
-		//set compass picture to use depending on which angle is closest
+		angle = ((angle - 180) % 360 + 360 + (360 / 27.0 / 2)) % 360;
+		//set compass picture to use depending on which angle is closest (27 states)
 		angle = Math.round(angle / (360 / 27.0));
 
 		//load the compass image
@@ -78,12 +88,12 @@ public class Navigation extends HUDComponent {
 		componentText[0].x = compX + 5;
 		componentText[0].y = compY + 30;
 
-		int currentDimension = CoordinateCommands.getDimension(player.worldClient.getDimensionKey());
+		int currentDimension = CoordinateCommands.getDimension();
 		//check if close enough to stop navigation
 		if (Math.abs(x - player.getPosX()) < 10 && Math.abs(z - player.getPosZ()) < 10
 				&& (dimensionID == -1 || currentDimension == dimensionID)) {
 			player.sendMessage(new StringTextComponent("Arrived."), Util.DUMMY_UUID);
-			location = null;
+			endNavigation();
 		}
 	}
 

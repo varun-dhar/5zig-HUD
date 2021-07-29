@@ -16,9 +16,8 @@
 
 package com.github.doggo4242.commands;
 
-import com.github.doggo4242.CommandParser;
 import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.UpdateChecker;
+import com.github.doggo4242.misc.UpdateChecker;
 import com.google.common.io.Resources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -62,8 +61,7 @@ public class GeneralCommands {
 				writer.write(String.format("%s=%d\n", entry.getKey(), entry.getValue()));
 			}
 			writer.close();
-		}catch(IOException e)
-		{
+		}catch(IOException e) {
 			return new StringTextComponent("Settings failed to save.");
 		}
 		return new StringTextComponent("Settings saved.");
@@ -78,7 +76,7 @@ public class GeneralCommands {
 		StringBuilder helpStr = new StringBuilder();
 		helpStr.append("Commands available:\n");
 		for(HashMap.Entry<String,String> entry : CommandParser.commandHelp.entrySet()){
-			helpStr.append("/5h ").append(entry.getKey()).append(" ").append(entry.getValue()).append('\n');
+			helpStr.append("/5h ").append(entry.getKey()).append(' ').append(entry.getValue()).append('\n');
 		}
 		helpStr.append("For more information, visit the ");
 		StringTextComponent wikiLink = new StringTextComponent("wiki.");

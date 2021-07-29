@@ -14,9 +14,19 @@
    limitations under the License.
  */
 
-package com.github.doggo4242;
+package com.github.doggo4242.HUD;
 
-public class HUDComponentText {
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+
+public class HUDComponentText implements IHUDSubcomponent {
 	public int x,y;
 	public String text;
+	private static final FontRenderer renderer = Minecraft.getInstance().fontRenderer;
+
+	@Override
+	public void render(MatrixStack matrixStack) {
+		renderer.drawStringWithShadow(matrixStack,text,x,y,0xFFFFFF);
+	}
 }

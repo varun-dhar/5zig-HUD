@@ -16,8 +16,7 @@
 
 package com.github.doggo4242.commands;
 
-import com.github.doggo4242.CommandParser;
-import com.github.doggo4242.StartupMessenger;
+import com.github.doggo4242.misc.StartupMessenger;
 import com.google.common.io.Resources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -38,28 +37,27 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Coordinate {
-	public int[] coords;
-	public int dimensionID;
-
-	public Coordinate(int[] coords, int dimensionID) {
-		this.coords = coords;
-		this.dimensionID = dimensionID;
-	}
-}
-
 public class CoordinateCommands {
-	public static HashMap<String, HashMap<String, Coordinate>> savedCoords = new HashMap<>();
-	public static String globalCoords = "__5ZIG_HUD_GLOBAL_COORDINATES";
+	private static class CoordinateMap extends HashMap<String, int[]> {}
+	private static final HashMap<String, CoordinateMap[]> savedCoords = new HashMap<>();
+	private static final String globalCoords = "__5ZIG_HUD_GLOBAL_COORDINATES";
+	private static final int unknownDim = 3;
 	private static final Minecraft mc = Minecraft.getInstance();
 
-	public CoordinateCommands() { readCoords(); }
+	public CoordinateCommands() {
+		readCoords();
+	}
 
-	public static int getDimension(RegistryKey<World> dim) {
+	public static int getDimension() {
+		if (mc.world == null) {
+			return -1;
+		}
+		RegistryKey<World> dim = mc.world.getDimensionKey();
 		if (dim.compareTo(World.OVERWORLD) == 0) {
 			return 0;
 		} else if (dim.compareTo(World.THE_NETHER) == 0) {
@@ -67,13 +65,12 @@ public class CoordinateCommands {
 		} else if (dim.compareTo(World.THE_END) == 0) {
 			return 2;
 		}
-		return -1;
+		return unknownDim;
 	}
 
 	public static String getWorldName() {
 		if (mc.isSingleplayer()) {
-			return StringUtils.replace(ServerLifecycleHooks.getCurrentServer().anvilConverterForAnvilFile.getSaveName(),
-					" ", "_");
+			return ServerLifecycleHooks.getCurrentServer().anvilConverterForAnvilFile.getSaveName();
 		} else {
 			ServerData data = mc.getCurrentServerData();
 			if (data == null) {
@@ -93,6 +90,7 @@ public class CoordinateCommands {
 				StartupMessenger.messages.add("The 5zigHUD coordinate configuration was not found. A new one was created.");
 			} else {
 				BufferedReader reader = new BufferedReader(new FileReader("mods/5zigHUDCoords.cfg"));
+				ArrayList<String> invalidEntries = new ArrayList<>();
 				String line;
 				Pattern oldFormat = Pattern.compile("X: (-?\\d+) Y: (-?\\d+) Z: (-?\\d+)");
 				boolean update = false;
@@ -111,17 +109,24 @@ public class CoordinateCommands {
 								coords[i] = Integer.parseInt(matcher.group(i + 1));
 							}
 						} catch (NumberFormatException e) {
+							invalidEntries.add(line);
 							StartupMessenger.messages.add("The coordinates file contains an invalid location, \"" + name + "\". Please correct or remove it.");
 							continue;
 						}
+						CoordinateMap[] map;
 						if (!savedCoords.containsKey(globalCoords)) {
-							savedCoords.put(globalCoords, new HashMap<>());
+							map = new CoordinateMap[1];
+							map[0] = new CoordinateMap();
+							savedCoords.put(globalCoords, map);
+						} else {
+							map = savedCoords.get(globalCoords);
 						}
-						savedCoords.get(globalCoords).put(name, new Coordinate(coords, -1));
+						map[0].put(name, coords);
 						update = true;
 					} else {
-						String[] coords = StringUtils.split(tmp[1], " ");
+						String[] coords = StringUtils.split(tmp[1], " ",5);
 						if (coords.length != 5) {
+							invalidEntries.add(line);
 							StartupMessenger.messages.add("The coordinates file contains an invalid location, \"" + name + "\". Please correct or remove it.");
 							continue;
 						}
@@ -133,82 +138,100 @@ public class CoordinateCommands {
 							}
 							dimensionID = Integer.parseInt(coords[3]);
 						} catch (NumberFormatException e) {
+							invalidEntries.add(line);
 							StartupMessenger.messages.add("The coordinates file contains an invalid location, \"" + name + "\". Please correct or remove it.");
 							continue;
 						}
+						CoordinateMap[] map;
 						if (!savedCoords.containsKey(coords[4])) {
-							savedCoords.put(coords[4], new HashMap<>());
+							map = new CoordinateMap[4];
+							map[dimensionID] = new CoordinateMap();
+							savedCoords.put(coords[4], map);
+						} else if ((map = savedCoords.get(coords[4]))[dimensionID] == null) {
+							map[dimensionID] = new CoordinateMap();
+						} else {
+							map = savedCoords.get(coords[4]);
 						}
-						savedCoords.get(coords[4]).put(name, new Coordinate(convCoords, dimensionID));
+						map[dimensionID].put(name, convCoords);
 					}
 				}
-				if (update) {
-					writeCoords();
-				}
 				reader.close();
+				if (update) {
+					if(!writeCoords()){
+						StartupMessenger.messages.add("Error writing to the 5zigHUD coordinate configuration.");
+					}
+					if (invalidEntries.size() > 0) {
+						try {
+							BufferedWriter writer = new BufferedWriter(new FileWriter("mods/5zigHUDCoords.cfg"));
+							for (String s : invalidEntries) {
+								writer.write(s + '\n');
+							}
+							writer.close();
+						}catch(IOException e){
+							StartupMessenger.messages.add("Error writing to the 5zigHUD coordinate configuration.");
+						}
+					}
+				}
 			}
 		} catch (IOException e) {
 			StartupMessenger.messages.add("The 5zigHUD coordinate configuration could not be read.");
 		}
 	}
 
-	@CommandParser.Command(help = "Sets location dimension. 0: Overworld 1: Nether 2: End.  Usage: /5h setLocationDimension name <0|1|2>", alias = "sld")
+	@CommandParser.Command(help = "Sets location dimension and sets world to current world. Specify the location to set, " +
+			"the desired dimension, and optionally, the current dimension of the location to change. 0: Overworld 1: Nether " +
+			"2: End. 3: Other.  Usage: /5h setLocationDimension name <0|1|2|3> [<0|1|2|3>]", alias = "sld")
 	public static IFormattableTextComponent setLocationDimension(String[] args) {
-		if (args != null && args.length == 2) {
+		if (args != null && args.length >= 2 && args.length <= 3) {
 			try {
-				int dim = Integer.parseInt(args[1]);
-				if (dim >= 0 && dim <= 2) {
-					Coordinate coordinate;
-					String world = getWorldName();
-					if (savedCoords.containsKey(world) && savedCoords.get(world).containsKey(args[0])) {
-						coordinate = savedCoords.get(world).get(args[0]);
-					} else if (savedCoords.containsKey(globalCoords) && savedCoords.get(globalCoords).containsKey(args[0])) {
-						coordinate = savedCoords.get(globalCoords).remove(args[0]);
-					} else {
+				int currentDim;
+				if (args.length == 3) {
+					currentDim = Integer.parseInt(args[2]);
+					if (!(currentDim >= 0 && currentDim <= unknownDim)) {
 						return new StringTextComponent("Invalid argument.");
 					}
-					coordinate.dimensionID = dim;
-					savedCoords.get(world).put(args[0], coordinate);
-					if(writeCoords()) {
-						return new StringTextComponent("Successfully updated location \"" + args[0] + "\".");
-					}else{
-						return new StringTextComponent("Error updating location. Please try again later.");
-					}
+				} else {
+					currentDim = getDimension();
+				}
+				int dim = Integer.parseInt(args[1]);
+				if (!(dim >= 0 && dim <= unknownDim)) {
+					return new StringTextComponent("Invalid argument.");
+				}
+				int[] coords;
+				String world = getWorldName();
+				CoordinateMap[] tmpWMap = savedCoords.get(world);
+				CoordinateMap tmpMap;
+				if (savedCoords.containsKey(globalCoords) && (tmpMap = savedCoords.get(globalCoords)[0]).containsKey(args[0])) {
+					coords = tmpMap.get(args[0]);
+				} else if (savedCoords.containsKey(world) && (tmpMap = tmpWMap[currentDim]) != null
+						&& tmpMap.containsKey(args[0])) {
+					coords = tmpMap.get(args[0]);
+				} else {
+					return new StringTextComponent("Nonexistent location or wrong dimension.");
+				}
+				if(tmpWMap[dim] == null){
+					tmpWMap[dim] = new CoordinateMap();
+				}
+				if(tmpWMap[dim].containsKey(args[0])){
+					return new StringTextComponent("This location already exists in the desired dimension.");
+				}
+				tmpWMap[dim].put(args[0], coords);
+				tmpMap.remove(args[0]);
+				if (writeCoords()) {
+					return new StringTextComponent("Successfully updated location \"" + args[0] + "\".");
+				} else {
+					return new StringTextComponent("Error updating location. Please try again later.");
 				}
 			} catch (NumberFormatException e) {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Invalid/missing argument.");
-	}
-
-	@CommandParser.Command(help = "Sets worldless location's world to current world. Usage: /5h setLocationWorld <name>", alias = "slw")
-	public static IFormattableTextComponent setLocationWorld(String[] args) {
-		if (args != null && args.length == 1) {
-			if (savedCoords.containsKey(globalCoords) && savedCoords.get(globalCoords).containsKey(args[0])) {
-				Coordinate coordinate = savedCoords.get(globalCoords).get(args[0]);
-				savedCoords.get(globalCoords).remove(args[0]);
-				String world = getWorldName();
-				if (!savedCoords.containsKey(world)) {
-					savedCoords.put(world, new HashMap<>());
-				}
-				savedCoords.get(world).put(args[0], coordinate);
-				if(writeCoords()) {
-					return new StringTextComponent("Successfully updated location \"" + args[0] + "\".");
-				}else{
-					return new StringTextComponent("Error updating location. Please try again later.");
-				}
-			}
-		}
-		return new StringTextComponent("Invalid/missing argument.");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
 	@CommandParser.Command(help = "Saves specified coordinates. Usage: /5h saveCoords <name> <X> <Y> <Z>", alias = "sc")
 	public static IFormattableTextComponent saveCoords(String[] args) {
 		if (args != null && args.length == 4) {
-			if (mc.world == null) {
-				return null;
-			}
 			int[] coords = new int[3];
 			try {
 				for (int i = 0; i < coords.length; i++) {
@@ -217,21 +240,27 @@ public class CoordinateCommands {
 			} catch (NumberFormatException e) {
 				return new StringTextComponent("Invalid argument(s)");
 			}
-			return new StringTextComponent((saveCoordsI(args[0], coords, mc.world.getDimensionKey())) ? "Coordinates saved successfully." : "Error saving coordinates. Please try again later.");
+			return new StringTextComponent((saveCoordsI(args[0], coords)) ? "Coordinates saved successfully." : "Error saving coordinates. Please try again later.");
 		}
-		return new StringTextComponent("Invalid argument(s)");
+		return new StringTextComponent("Invalid/missing argument(s)");
 	}
 
-	public static boolean saveCoordsI(String name, int[] coords, RegistryKey<World> dim) {
+	public static boolean saveCoordsI(String name, int[] coords) {
 		if (coords.length == 3) {
 			String world = getWorldName();
+			int dimensionID = getDimension();
+			CoordinateMap[] map;
 			if (!savedCoords.containsKey(world)) {
-				savedCoords.put(world, new HashMap<>());
+				map = new CoordinateMap[4];
+				map[dimensionID] = new CoordinateMap();
+				savedCoords.put(world, map);
+			} else if ((map = savedCoords.get(world))[dimensionID] == null) {
+				map[dimensionID] = new CoordinateMap();
 			}
 			if (savedCoords.containsKey(globalCoords)) {
-				savedCoords.get(globalCoords).remove(name);
+				savedCoords.get(globalCoords)[0].remove(name);
 			}
-			savedCoords.get(world).put(name, new Coordinate(coords, getDimension(dim)));
+			map[dimensionID].put(name, coords);
 			return writeCoords();
 		}
 		return false;
@@ -241,103 +270,183 @@ public class CoordinateCommands {
 	public static IFormattableTextComponent saveCurrentCoords(String[] args) {
 		if (args != null && args.length == 1) {
 			ClientPlayerEntity player = mc.player;
-			if (player != null && mc.world != null) {
+			if (player != null) {
 				boolean success = saveCoordsI(args[0],
-						new int[]{(int) player.lastTickPosX, (int) player.lastTickPosY, (int) player.lastTickPosZ},
-						mc.world.getDimensionKey());
+						new int[]{(int) player.lastTickPosX, (int) player.lastTickPosY, (int) player.lastTickPosZ});
 				return new StringTextComponent((success) ? "Coordinates saved successfully." : "Error saving coordinates. Please try again later.");
 			}
 			return new StringTextComponent("Could not get coordinates.");
 		}
-		return new StringTextComponent("Invalid argument(s).");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
-	@CommandParser.Command(help = "Deletes the coordinates of a specified location. Usage: /5h delCoords <name>", alias = "dc")
+	@CommandParser.Command(help = "Deletes the coordinates of a specified location. Optionally provide a dimension." +
+			" Usage: /5h delCoords <name> [<0|1|2|3>]", alias = "dc")
 	public static IFormattableTextComponent delCoords(String[] args) {
-		if (args != null && args.length == 1) {
+		if (args != null && (args.length == 1 || args.length == 2)) {
+			int dim;
+			if (args.length == 2) {
+				try {
+					dim = Integer.parseInt(args[1]);
+					if(!(dim >= 0 && dim <= unknownDim)){
+						return new StringTextComponent("Invalid argument \"dimension\".");
+					}
+				} catch (NumberFormatException e) {
+					return new StringTextComponent("Invalid argument \"dimension\".");
+				}
+			} else {
+				dim = getDimension();
+			}
 			String world = getWorldName();
-			if (((savedCoords.containsKey(world) && savedCoords.get(world).remove(args[0]) != null)
-					|| (savedCoords.containsKey(globalCoords) && savedCoords.get(globalCoords).remove(args[0]) != null))
+			CoordinateMap tmpMap;
+			if (((savedCoords.containsKey(world) && (tmpMap = savedCoords.get(world)[dim]) != null && tmpMap.remove(args[0]) != null)
+					|| (savedCoords.containsKey(globalCoords) && savedCoords.get(globalCoords)[0].remove(args[0]) != null))
 					&& writeCoords()) {
 				return new StringTextComponent("Coordinates deleted successfully.");
 			} else {
 				return new StringTextComponent("Error deleting coordinates. Check the location name and try again.");
 			}
 		}
-		return new StringTextComponent("Invalid argument(s).");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
-	public static Coordinate getCoordsI(String name) {
+	public static int[] getCoordsI(String name, int dim){
 		String world = getWorldName();
-		if (savedCoords.containsKey(world) && savedCoords.get(world).containsKey(name)) {
-			return savedCoords.get(world).get(name);
-		} else if (savedCoords.containsKey(globalCoords) && savedCoords.get(globalCoords).containsKey(name)) {
-			return savedCoords.get(globalCoords).get(name);
+		CoordinateMap map;
+		if (savedCoords.containsKey(world) && (map = savedCoords.get(world)[dim]) != null && map.containsKey(name)) {
+			return map.get(name);
+		} else if (savedCoords.containsKey(globalCoords) && (map = savedCoords.get(globalCoords)[0]) != null && map.containsKey(name)) {
+			return map.get(name);
 		} else {
 			return null;
 		}
-	}	
-	@CommandParser.Command(help = "Gets the coordinates of a specified location. Usage: /5h getCoords <location name>", alias = "gc")
+	}
+
+	public static int[] getCoordsI(String name) {
+		return getCoordsI(name,getDimension());
+	}
+
+	@CommandParser.Command(help = "Gets the coordinates of a specified location. Optionally provide a dimension. " +
+			"Usage: /5h getCoords <location name> [<0|1|2|3>]", alias = "gc")
 	public static IFormattableTextComponent getCoords(String[] args) {
-		if (args != null && args.length == 1) {
-			Coordinate coordinate = getCoordsI(args[0]);
-			if(coordinate == null) {
+		if (args != null && args.length >= 1 && args.length <= 2) {
+			int dim;
+			if(args.length == 2){
+				try{
+					dim = Integer.parseInt(args[1]);
+					if(!(dim >= 0 && dim <= unknownDim)){
+						return new StringTextComponent("Invalid argument.");
+					}
+				}catch (NumberFormatException e){
+					return new StringTextComponent("Invalid argument.");
+				}
+			}else{
+				dim = getDimension();
+			}
+			int[] coords = getCoordsI(args[0],dim);
+			if (coords == null) {
 				return new StringTextComponent("No such location exists.");
 			}
-			int[] coords = coordinate.coords;
 			return new StringTextComponent(String.format("X: %d Y: %d Z: %d", coords[0], coords[1], coords[2]));
 		}
-		return new StringTextComponent("Invalid argument(s).");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
 	@CommandParser.Command(help = "Lists the coordinate locations of the current world and global locations.", alias = "lc")
 	public static IFormattableTextComponent listCoords(String[] args) {
 		StringBuilder coordsList = new StringBuilder();
 		coordsList.append("Locations:\n");
-		String[] worlds = {getWorldName(), globalCoords};
+		final String[] worlds = {getWorldName(), globalCoords};
+		final String[] dimensionNames = {"Overworld:\n", "Nether:\n", "End:\n", "Unknown dimension:\n"};
 		for (String world : worlds) {
 			if (!savedCoords.containsKey(world)) {
 				continue;
 			}
-			int j = savedCoords.get(world).size();
-			for (HashMap.Entry<String, Coordinate> entry : savedCoords.get(world).entrySet()) {
-				int[] coords = entry.getValue().coords;
-				coordsList.append(String.format("%s X: %d Y: %d Z: %d", entry.getKey(), coords[0], coords[1], coords[2]));
-				if (j-- != 1) {
-					coordsList.append('\n');
+			if(world.equals(globalCoords)){
+				coordsList.append("  Global:\n");
+			}
+			CoordinateMap[] maps = savedCoords.get(world);
+			for (int i = 0;i<maps.length;i++) {
+				if(maps[i] == null){
+					continue;
+				}
+				if(!world.equals(globalCoords)) {
+					coordsList.append("  ").append(dimensionNames[i]);
+				}
+				for (HashMap.Entry<String, int[]> entry : maps[i].entrySet()) {
+					int[] coords = entry.getValue();
+					coordsList.append(String.format("    %s X: %d Y: %d Z: %d\n", entry.getKey(), coords[0], coords[1], coords[2]));
 				}
 			}
+			coordsList.deleteCharAt(coordsList.length()-1);
 		}
 		/*savedCoords.forEach((k,v)-> coordsList.append(k).append(" ").append(v).append("\n"));
 		coordsList.deleteCharAt(coordsList.length()-1);*/
-		return new StringTextComponent(coordsList.toString().trim());
+		return new StringTextComponent(coordsList.toString());
 	}
 
-	@CommandParser.Command(help="Lists coordinate locations of all worlds",alias="lac")
+	@CommandParser.Command(help = "Lists coordinate locations of all worlds", alias = "lac")
 	public static IFormattableTextComponent listAllCoords(String[] args) {
 		StringBuilder coordsList = new StringBuilder();
 		coordsList.append("Locations:\n");
-		int i = savedCoords.size();
-		for (HashMap.Entry<String, HashMap<String, Coordinate>> mapEntry : savedCoords.entrySet()) {
-			String key = mapEntry.getKey();
+		final String[] dimensionNames = {"Overworld:\n", "Nether:\n", "End:\n", "Unknown dimension:\n"};
+		for (HashMap.Entry<String, CoordinateMap[]> map : savedCoords.entrySet()) {
+			String key = map.getKey();
 			if (key.equals(globalCoords)) {
-				coordsList.append("Global:\n");
+				coordsList.append("  Global:\n    Unknown dimension:\n");
 			} else {
-				coordsList.append(StringUtils.replace(key, "_", " ")).append(":\n");
+				coordsList.append("  ").append(key).append(":\n");
 			}
-			int j = mapEntry.getValue().size();
-			for (HashMap.Entry<String, Coordinate> entry : mapEntry.getValue().entrySet()) {
-				int[] coords = entry.getValue().coords;
-				coordsList.append(String.format("%s X: %d Y: %d Z: %d", entry.getKey(), coords[0], coords[1], coords[2]));
-				if (j-- != 1) {
-					coordsList.append('\n');
+			CoordinateMap[] mapEntries = map.getValue();
+			for (int j = 0; j < mapEntries.length; j++) {
+				if(mapEntries[j] == null){
+					continue;
+				}
+				if(!key.equals(globalCoords)) {
+					coordsList.append("    ").append(dimensionNames[j]);
+				}
+				for (HashMap.Entry<String, int[]> entry : mapEntries[j].entrySet()) {
+					int[] coords = entry.getValue();
+					coordsList.append(String.format("      %s X: %d Y: %d Z: %d\n", entry.getKey(), coords[0], coords[1], coords[2]));
 				}
 			}
-			if (i-- != 1) {
-				coordsList.append('\n');
-			}
+			coordsList.deleteCharAt(coordsList.length()-1);
 		}
 		return new StringTextComponent(coordsList.toString());
+	}
+
+	@CommandParser.Command(help="Renames a location. Optionally takes the dimension of the location. " +
+			"Usage: /5h renameCoords <location> <new name> [<0|1|2|3>]",alias="rc")
+	public static IFormattableTextComponent renameCoords(String[] args){
+		if(args != null && args.length >= 2 && args.length <= 3){
+			int dimension;
+			if(args.length == 3){
+				try{
+					dimension = Integer.parseInt(args[2]);
+					if(!(dimension >= 0 && dimension <= unknownDim)){
+						return new StringTextComponent("Invalid argument: \"dimension\"");
+					}
+				}catch(NumberFormatException e){
+					return new StringTextComponent("Invalid argument: \"dimension\"");
+				}
+			}else{
+				dimension = getDimension();
+			}
+			String world = getWorldName();
+			CoordinateMap map;
+			if(savedCoords.containsKey(world) && (map = savedCoords.get(world)[dimension]) != null && map.containsKey(args[0])){
+				map.put(args[1],map.remove(args[0]));
+			}else if(savedCoords.containsKey(globalCoords) && (map = savedCoords.get(globalCoords)[0]).containsKey(args[0])){
+				map.put(args[1],map.remove(args[0]));
+			}else{
+				return new StringTextComponent("Invalid/missing argument(s)");
+			}
+			if(!writeCoords()){
+				return new StringTextComponent("Error saving coordinates. Please try again later.");
+			}
+			return new StringTextComponent(String.format("Location \"%s\" renamed to \"%s\"",args[0],args[1]));
+		}
+		return new StringTextComponent("Invalid/missing argument(s)");
 	}
 
 	private static boolean writeCoords() {
@@ -346,12 +455,17 @@ public class CoordinateCommands {
 			String contents = Resources.toString(Resources.getResource("/com/github/doggo4242/5zigHUDCoords.cfg"), Charset.defaultCharset());
 			contents = contents.substring(0, contents.indexOf('\n', contents.lastIndexOf('#')) + 1);
 			writer.write(contents);
-			for (HashMap.Entry<String, HashMap<String, Coordinate>> entryMap : savedCoords.entrySet()) {
-				for (HashMap.Entry<String, Coordinate> entry : entryMap.getValue().entrySet()) {
-					Coordinate coordinate = entry.getValue();
-					int[] coords = coordinate.coords;
-					writer.write(String.format("%s;%d %d %d %d %s\n", entry.getKey(), coords[0],
-							coords[1], coords[2], coordinate.dimensionID, entryMap.getKey()));
+			for (HashMap.Entry<String, CoordinateMap[]> map : savedCoords.entrySet()) {
+				CoordinateMap[] mapEntries = map.getValue();
+				for (int i = 0; i < mapEntries.length; i++) {
+					if(mapEntries[i] == null){
+						continue;
+					}
+					for (HashMap.Entry<String, int[]> entry : mapEntries[i].entrySet()) {
+						int[] coords = entry.getValue();
+						writer.write(String.format("%s;%d %d %d %d %s\n", entry.getKey(), coords[0],
+								coords[1], coords[2], i, map.getKey()));
+					}
 				}
 			}
 			writer.close();

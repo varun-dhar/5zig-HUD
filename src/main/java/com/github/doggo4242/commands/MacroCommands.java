@@ -16,8 +16,7 @@
 
 package com.github.doggo4242.commands;
 
-import com.github.doggo4242.CommandParser;
-import com.github.doggo4242.StartupMessenger;
+import com.github.doggo4242.misc.StartupMessenger;
 import com.google.common.io.Resources;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -92,7 +91,7 @@ public class MacroCommands {
 				return new StringTextComponent("Macro " + args[0] + " does not exist.");
 			}
 		}
-		return new StringTextComponent("Invalid argument(s).");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
 	@CommandParser.Command(help = "Lists all macros.", alias = "lm")

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.github.doggo4242;
+package com.github.doggo4242.commands;
 
 import com.github.doggo4242.commands.*;
 import net.minecraft.client.Minecraft;
@@ -51,10 +51,10 @@ public class CommandParser {
 		String alias();
 	}
 
-	public static HashMap<String, Function<String[], IFormattableTextComponent>> commands = new HashMap<>();
-	public static HashMap<String,String> commandHelp = new HashMap<>();
-	public static HashMap<String,String> commandAliases = new HashMap<>();
-	private final static String prefix = "5h";
+	private static final HashMap<String, Function<String[], IFormattableTextComponent>> commands = new HashMap<>();
+	public static final HashMap<String,String> commandHelp = new HashMap<>();
+	private static final HashMap<String,String> commandAliases = new HashMap<>();
+	private static final String prefix = "5h";
 	private static final Pattern commandPattern = Pattern.compile("/?"+prefix+" (\\w+)( .+)?");
 
 	public CommandParser(){
@@ -112,8 +112,7 @@ public class CommandParser {
 	}
 
 	@SubscribeEvent
-	public void parseChat(ClientChatEvent event)
-	{
+	public void parseChat(ClientChatEvent event) {
 		//find and run commands/macros
 		String msg = event.getMessage();
 		String arg = StringUtils.substringBefore(msg," ");

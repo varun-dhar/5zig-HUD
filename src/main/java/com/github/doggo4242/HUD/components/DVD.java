@@ -1,14 +1,15 @@
-package com.github.doggo4242.components;
+package com.github.doggo4242.HUD.components;
 
 import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.HUDComponent;
-import com.github.doggo4242.HUDComponentImage;
+import com.github.doggo4242.HUD.HUDComponent;
+import com.github.doggo4242.HUD.HUDComponentImage;
 
 public class DVD extends HUDComponent {
 	private int xDir = 1;
 	private int yDir = 1;
 	private final int inc = 2;
 	public DVD(){
+		super();
 		componentImages = new HUDComponentImage[1];
 		componentImages[0] = new HUDComponentImage(HUD5zig.MODID+":dvd.png",30,30,0,0);
 	}

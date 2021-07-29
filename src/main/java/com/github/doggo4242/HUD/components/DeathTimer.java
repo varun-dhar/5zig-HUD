@@ -14,30 +14,49 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.components;
+package com.github.doggo4242.HUD.components;
 
+import com.github.doggo4242.HUD.HUDComponentTextGroup;
 import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.HUDComponent;
-import com.github.doggo4242.HUDComponentText;
-import net.minecraft.world.DimensionType;
+import com.github.doggo4242.HUD.HUDComponent;
+import com.github.doggo4242.commands.CoordinateCommands;
 
 import java.util.concurrent.TimeUnit;
 
 public class DeathTimer extends HUDComponent {
-	public static boolean dead = false;
-	public static int[] deathCoords = new int[3];
-	public static DimensionType dimension;
-	public static long deathTime = 0;
+	private static boolean dead = false;
+	private static final int[] deathCoords = new int[3];
+	private static int dimension;
+	private static long deathTime = 0;
 	private final static TimeUnit tUnitMs = TimeUnit.MILLISECONDS;
 	private final int defVerYPos = 126;
 	private final int defHorYPos = 43;
 
+	private final HUDComponentTextGroup textGroup;
+
 	public DeathTimer(){
+		super();
 		componentImages = null;
-		componentText = new HUDComponentText[2];
-		for(int i = 0;i<componentText.length;i++){
-			componentText[i] = new HUDComponentText();
-		}
+		componentTextGroups = new HUDComponentTextGroup[1];
+		componentTextGroups[0] = new HUDComponentTextGroup(2);
+		textGroup = componentTextGroups[0];
+	}
+
+	public static void setDeathInfo(int x, int y, int z,int dim){
+		deathCoords[0] = x;
+		deathCoords[1] = y;
+		deathCoords[2] = z;
+		dimension = dim;
+		dead = true;
+	}
+
+	public static void setRespawnInfo(){
+		dead = false;
+		deathTime = System.currentTimeMillis();
+	}
+
+	public static int[] getDeathCoords(){
+		return deathCoords;
 	}
 
 	@Override
@@ -47,13 +66,13 @@ public class DeathTimer extends HUDComponent {
 		if ((disabled = !(!dead && (System.currentTimeMillis() - deathTime) < tUnitMs.convert(5, TimeUnit.MINUTES)
 				&& Math.abs(HUD5zig.settings.get("DeathTimerEnabled")) == 1
 				&& !(nearby = (Math.abs(player.lastTickPosX-deathCoords[0]) < 10 && Math.abs(player.lastTickPosZ-deathCoords[2]) < 10
-				&& player.worldClient.getDimensionType().isSame(dimension)))))) {
+				&& CoordinateCommands.getDimension() == dimension))))) {
 			if(nearby){
-				deathTime = System.currentTimeMillis();
+				deathTime = 0;
 			}
 			return;
 		}
-		boolean alignment = Math.abs(HUD5zig.settings.get("DeathTimerAlignment")) == 1;
+		textGroup.alignment = Math.abs(HUD5zig.settings.get("DeathTimerAlignment")) == 1;
 		//get seconds without minutes
 		int sec = (int) ((tUnitMs.convert(5, TimeUnit.MINUTES) -
 				(System.currentTimeMillis() - deathTime)) % tUnitMs.convert(1, TimeUnit.MINUTES) /
@@ -63,21 +82,16 @@ public class DeathTimer extends HUDComponent {
 		//set alignment and position
 		int x = HUD5zig.settings.get("DeathTimerX");
 		int y = HUD5zig.settings.get("DeathTimerY");
-		x = (x == -1 || (x + 10 * componentText.length) > scrWidth) ? defXPos : x;
-		if (alignment && (y == -1 || (y + 10 * componentText.length) > scrHeight)) {
+		x = (x == -1 || (x + 10 * textGroup.text.length) > scrWidth) ? defXPos : x;
+		if (textGroup.alignment && (y == -1 || (y + 10 * textGroup.text.length) > scrHeight)) {
 			y = defVerYPos;
-		} else if (!alignment && (y == -1 || y > scrHeight)) {
+		} else if (!textGroup.alignment && (y == -1 || y > scrHeight)) {
 			y = defHorYPos;
 		}
-		componentText[0].text = String.format("%sItems despawn in> %s %d:%02d", red, white, min, sec);
-		componentText[1].text = String.format("%sDied at> X: %s%d%s Y: %s%d%s Z: %s%d",
+		textGroup.x = x;
+		textGroup.y = y;
+		textGroup.text[0] = String.format("%sItems despawn in> %s %d:%02d", red, white, min, sec);
+		textGroup.text[1] = String.format("%sDied at> X: %s%d%s Y: %s%d%s Z: %s%d",
 				red, white, deathCoords[0], red, white, deathCoords[1], red, white, deathCoords[2]);
-		for (HUDComponentText text : componentText) {
-			text.x = x;
-			text.y = y;
-			if (alignment) {
-				y += defYSpacing;
-			}
-		}
 	}
 }

@@ -14,8 +14,9 @@
    limitations under the License.
  */
 
-package com.github.doggo4242;
+package com.github.doggo4242.misc;
 
+import com.github.doggo4242.HUD5zig;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
