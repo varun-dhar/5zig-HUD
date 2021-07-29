@@ -16,8 +16,9 @@ Feature requests can be submitted on the issues page.
 Contributions are appreciated.
 
 # Community
-We now have a [Github Discussions page](https://github.com/varun-dhar/5zig-HUD/discussions)!
-We now have a [Discord server](https://discord.gg/wvBU8exFq3)
+[Github Discussions](https://github.com/varun-dhar/5zig-HUD/discussions)
+
+[Discord server](https://discord.gg/wvBU8exFq3)
 
 # TODO:
 Add custom colors for HUD
