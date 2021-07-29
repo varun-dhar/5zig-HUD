@@ -42,7 +42,7 @@ import java.util.List;
 public class HUD5zig//setup stuff
 {
 	public static final String MODID = "hudmod";
-	public static final int version = 8;
+	public static final int version = 10;
 	public static final List<String> confOps = Arrays.asList("HUD-X", "HUD-Y", "HUD-Alignment", "HUD-Enabled", "ArmorX",
 			"ArmorY", "ArmorAlignment", "ArmorEnabled", "DeathTimerX", "DeathTimerY", "DeathTimerAlignment",
 			"DeathTimerEnabled", "UpdaterEnabled", "NavX", "NavY","NavToDeathEnabled");
