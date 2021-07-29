@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar;
+package com.github.varun_dhar.HUD;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -22,7 +22,9 @@ import net.minecraft.util.text.TextFormatting;
 
 public abstract class HUDComponent {
 	protected HUDComponentText[] componentText;
+	protected HUDComponentTextGroup[] componentTextGroups;
 	protected HUDComponentImage[] componentImages;
+	protected IHUDSubcomponent[][] subcomponents;
 	protected boolean disabled = false;
 	protected final int defYSpacing = 10;
 	protected final int defXPos = 3;
@@ -34,18 +36,21 @@ public abstract class HUDComponent {
 	protected static final String gray = TextFormatting.GRAY.toString();
 	protected static final String red = TextFormatting.RED.toString();
 
-	public HUDComponentImage[] getComponentImages() {
-		return componentImages;
+	public IHUDSubcomponent[][] getSubcomponents(){
+		return subcomponents;
 	}
 
-	public HUDComponentText[] getComponentText() {
-		return componentText;
+	public HUDComponent(){
+		subcomponents = new IHUDSubcomponent[3][];
 	}
 
 	public void initComponent(){
 		scrWidth = mc.getMainWindow().getScaledWidth();
 		scrHeight = mc.getMainWindow().getScaledHeight();
 		player = mc.player;
+		subcomponents[0] = componentText;
+		subcomponents[1] = componentTextGroups;
+		subcomponents[2] = componentImages;
 		updateComponent();
 	}
 	public abstract void updateComponent();

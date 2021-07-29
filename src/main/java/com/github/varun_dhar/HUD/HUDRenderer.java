@@ -14,15 +14,14 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar;
+package com.github.varun_dhar.HUD;
 
-import com.github.varun_dhar.components.*;
+import com.github.varun_dhar.HUD.components.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.gui.GuiUtils;
 
 import java.util.ArrayList;
 
@@ -48,7 +47,7 @@ public class HUDRenderer {
 	 */
 	@SubscribeEvent
 	public void overlay(RenderGameOverlayEvent.Post event) {
-		//prevent hunger armor bar and health bar glitching, disable HUD when chat/debugr is open
+		//prevent hunger armor bar and health bar glitching, disable HUD when chat/debugger is open
 		if (event.getType() != RenderGameOverlayEvent.ElementType.ALL || mc.player == null
 				|| mc.currentScreen instanceof ChatScreen || mc.gameSettings.showDebugInfo) {
 			return;
@@ -59,23 +58,12 @@ public class HUDRenderer {
 			if (component.disabled) {
 				continue;
 			}
-			HUDComponentText[] text = component.getComponentText();
-			if (text != null) {
-				for (int i = 0; i < text.length; ) {
-					StringBuilder builder = new StringBuilder().append(text[i].text);
-					int j = i++;
-					for (; i < text.length && text[i].x == text[j].x && text[i].y == text[j].y; i++) {
-						builder.append(" ").append(text[i].text);
-					}
-					renderer.drawStringWithShadow(event.getMatrixStack(), builder.toString(), text[j].x, text[j].y, 0xFFFFFF);
+			for(IHUDSubcomponent[] subcomponents : component.getSubcomponents()){
+				if(subcomponents == null){
+					continue;
 				}
-			}
-			if (component.getComponentImages() != null) {
-				for (HUDComponentImage image : component.getComponentImages()) {
-					if (image.image != null) {
-						mc.getTextureManager().bindTexture(image.image);
-						GuiUtils.drawInscribedRect(event.getMatrixStack(), image.x, image.y, image.width, image.height, image.width, image.height);
-					}
+				for(IHUDSubcomponent subcomponent : subcomponents){
+					subcomponent.render(event.getMatrixStack());
 				}
 			}
 		}

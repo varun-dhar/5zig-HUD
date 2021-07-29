@@ -1,14 +1,15 @@
-package com.github.varun_dhar.components;
+package com.github.varun_dhar.HUD.components;
 
 import com.github.varun_dhar.HUD5zig;
-import com.github.varun_dhar.HUDComponent;
-import com.github.varun_dhar.HUDComponentImage;
+import com.github.varun_dhar.HUD.HUDComponent;
+import com.github.varun_dhar.HUD.HUDComponentImage;
 
 public class DVD extends HUDComponent {
 	private int xDir = 1;
 	private int yDir = 1;
 	private final int inc = 2;
 	public DVD(){
+		super();
 		componentImages = new HUDComponentImage[1];
 		componentImages[0] = new HUDComponentImage(HUD5zig.MODID+":dvd.png",30,30,0,0);
 	}

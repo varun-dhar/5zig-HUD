@@ -16,7 +16,6 @@
 
 package com.github.varun_dhar.commands;
 
-import com.github.varun_dhar.CommandParser;
 import com.github.varun_dhar.HUD5zig;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -37,7 +36,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing/invalid argument 'X'.");
+		return new StringTextComponent("Invalid/missing argument <X>.");
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the HUD. Usage: /5h setHUDY <Y value>",alias="shy")
 	public static IFormattableTextComponent setHUDY(String[] args){
@@ -49,7 +48,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing/invalid argument 'Y'.");
+		return new StringTextComponent("Invalid/missing argument <Y>.");
 	}
 	@CommandParser.Command(help="Sets the alignment of the HUD. Usage: /5h setHUDAlignment <0|1>",alias="sha")
 	public static IFormattableTextComponent setHUDAlignment(String[] args){
@@ -65,7 +64,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing/invalid argument 'alignment'");
+		return new StringTextComponent("Invalid/missing argument <alignment>");
 	}
 	@CommandParser.Command(help="Shows/hides armor pane.",alias="tap")
 	public static IFormattableTextComponent toggleArmorPane(String[] args){
@@ -82,7 +81,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing/invalid argument 'X'");
+		return new StringTextComponent("Invalid/missing argument <X>");
 	}
 	@CommandParser.Command(help="Sets the y-coordinate of the armor pane. Usage: /5h setArmorY <Y value>",alias="say")
 	public static IFormattableTextComponent setArmorY(String[] args){
@@ -94,7 +93,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing/invalid argument 'Y'");
+		return new StringTextComponent("Invalid/missing argument <Y>");
 	}
 	@CommandParser.Command(help="Sets the alignment of the armor pane. Usage: /5h setArmorAlignment <0|1>",alias="saa")
 	public static IFormattableTextComponent setArmorAlignment(String[] args){
@@ -110,7 +109,7 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing/invalid argument 'alignment'");
+		return new StringTextComponent("Invalid/missing argument <alignment>");
 	}
 	@CommandParser.Command(help="Shows/hides death timer.",alias="tt")
 	public static IFormattableTextComponent toggleTimer(String[] args){
@@ -131,6 +130,6 @@ public class HUDCommands {
 				return new StringTextComponent("Invalid argument.");
 			}
 		}
-		return new StringTextComponent("Missing argument 'alignment'");
+		return new StringTextComponent("Invalid/missing argument <alignment>");
 	}
 }

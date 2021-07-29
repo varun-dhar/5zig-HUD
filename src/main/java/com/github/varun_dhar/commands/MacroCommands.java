@@ -16,8 +16,7 @@
 
 package com.github.varun_dhar.commands;
 
-import com.github.varun_dhar.CommandParser;
-import com.github.varun_dhar.StartupMessenger;
+import com.github.varun_dhar.misc.StartupMessenger;
 import com.google.common.io.Resources;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -92,7 +91,7 @@ public class MacroCommands {
 				return new StringTextComponent("Macro " + args[0] + " does not exist.");
 			}
 		}
-		return new StringTextComponent("Invalid argument(s).");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
 	@CommandParser.Command(help = "Lists all macros.", alias = "lm")

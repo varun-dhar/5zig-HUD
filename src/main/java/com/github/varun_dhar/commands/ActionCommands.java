@@ -16,8 +16,7 @@
 
 package com.github.varun_dhar.commands;
 
-import com.github.varun_dhar.CommandParser;
-import com.github.varun_dhar.StartupMessenger;
+import com.github.varun_dhar.misc.StartupMessenger;
 import com.google.common.io.Resources;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -93,7 +92,7 @@ public class ActionCommands {
 			actions.put(args[0], action);
 			return new StringTextComponent((writeActions()) ? "Action saved successfully." : "Error saving action. Please try again later.");
 		}
-		return new StringTextComponent("Invalid argument(s).");
+		return new StringTextComponent("Invalid/missing argument(s).");
 	}
 
 	@CommandParser.Command(help = "Deletes an action. Usage: /5h delAction <action name>", alias = "da")

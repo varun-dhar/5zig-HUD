@@ -16,6 +16,10 @@
 
 package com.github.varun_dhar;
 
+import com.github.varun_dhar.HUD.HUDRenderer;
+import com.github.varun_dhar.commands.CommandParser;
+import com.github.varun_dhar.misc.DeathHandler;
+import com.github.varun_dhar.misc.StartupMessenger;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -50,8 +54,8 @@ public class HUD5zig//setup stuff
 	private void clientSetup(FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(new HUDRenderer());
 		MinecraftForge.EVENT_BUS.register(new CommandParser());
-		MinecraftForge.EVENT_BUS.register(new StartupMessenger());
-		MinecraftForge.EVENT_BUS.register(new DeathHandler());
+		MinecraftForge.EVENT_BUS.register(StartupMessenger.class);
+		MinecraftForge.EVENT_BUS.register(DeathHandler.class);
 		readSettings();
 	}
 	//read settings into map

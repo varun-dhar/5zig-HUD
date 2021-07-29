@@ -14,8 +14,9 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar;
+package com.github.varun_dhar.misc;
 
+import com.github.varun_dhar.HUD5zig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.Util;
@@ -29,7 +30,7 @@ public class StartupMessenger {
 	public static ArrayList<String> messages = new ArrayList<>();
 	private static boolean firstRun = true;
 	@SubscribeEvent
-	public void onInitialPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event){
+	public static void onInitialPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event){
 		if(!firstRun){
 			return;
 		}

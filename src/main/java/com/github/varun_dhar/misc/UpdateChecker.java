@@ -14,8 +14,9 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar;
+package com.github.varun_dhar.misc;
 
+import com.github.varun_dhar.HUD5zig;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

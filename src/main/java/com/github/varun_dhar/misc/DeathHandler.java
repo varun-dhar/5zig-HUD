@@ -14,11 +14,12 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar;
+package com.github.varun_dhar.misc;
 
+import com.github.varun_dhar.HUD5zig;
 import com.github.varun_dhar.commands.CoordinateCommands;
 import com.github.varun_dhar.commands.NavCommands;
-import com.github.varun_dhar.components.DeathTimer;
+import com.github.varun_dhar.HUD.components.DeathTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -27,21 +28,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class DeathHandler {
 	private static final Minecraft mc = Minecraft.getInstance();
 	@SubscribeEvent
-	public void onDeath(final TickEvent.PlayerTickEvent event){
+	public static void onDeath(final TickEvent.PlayerTickEvent event){
 		if(!event.player.isAlive() && event.player.equals(mc.player)) {
-			DeathTimer.dead = true;
-			DeathTimer.deathCoords[0]=(int)mc.player.lastTickPosX;
-			DeathTimer.deathCoords[1]=(int)mc.player.lastTickPosY;
-			DeathTimer.deathCoords[2]=(int)mc.player.lastTickPosZ;
-			DeathTimer.dimension = mc.player.worldClient.getDimensionType();
+			DeathTimer.setDeathInfo((int)mc.player.lastTickPosX,(int)mc.player.lastTickPosY,(int)mc.player.lastTickPosZ,
+					CoordinateCommands.getDimension());
 		}
 	}
 	@SubscribeEvent
-	public void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
+	public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
 		if(event.getPlayer().equals(mc.player)){
-			DeathTimer.dead = false;
-			DeathTimer.deathTime = System.currentTimeMillis();
-			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.deathCoords,mc.player.worldClient.getDimensionKey());
+			DeathTimer.setRespawnInfo();
+			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.getDeathCoords());
 			if(Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1){
 				NavCommands.nav(new String[]{"lastDeath"});
 			}
