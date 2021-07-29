@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 
 @Mod(HUD5zig.MODID)
-
 public class HUD5zig//setup stuff
 {
 	public static final String MODID = "hudmod";
@@ -62,8 +61,7 @@ public class HUD5zig//setup stuff
 	private void readSettings(){
 		try {
 			File cfg = new File("mods/5zigHUD.cfg");
-			if(!cfg.isFile())
-			{
+			if(!cfg.isFile()) {
 				URL defaultConfig = getClass().getResource("/com/github/doggo4242/5zigHUD.cfg");
 				cfg.createNewFile();
 				FileUtils.copyURLToFile(defaultConfig,cfg);
@@ -72,8 +70,7 @@ public class HUD5zig//setup stuff
 				}
 				StartupMessenger.messages.add(
 						"The configuration for 5zigHUD was not found. A new one was created with default settings");
-			}
-			else {
+			} else {
 				BufferedReader reader = new BufferedReader(new FileReader(cfg));
 				for(String s = reader.readLine();s != null;s = reader.readLine()){
 					s = s.trim();
@@ -92,20 +89,20 @@ public class HUD5zig//setup stuff
 					}
 				}
 				reader.close();
-				if (!settings.containsKey("DVDEnabled")) {
-					settings.put("DVDEnabled", 0);
-				}
 				if (settings.size() < confOps.size()) {
 					StartupMessenger.messages.add(
 							"The configuration for 5zigHUD is invalid. Default settings for the invalid/missing fields were used.");
-					BufferedWriter writer = new BufferedWriter(new FileWriter("mods/5zigHUD.cfg",true));
+					BufferedWriter writer = new BufferedWriter(new FileWriter(cfg,true));
 					for(String op : confOps){
 						if(!settings.containsKey(op)) {
 							settings.put(op, -1);
-							writer.write(op+"=-1");
+							writer.write(op+"=-1\n");
 						}
 					}
 					writer.close();
+				}
+				if (!settings.containsKey("DVDEnabled")) {
+					settings.put("DVDEnabled", 0);
 				}
 			}
 		}catch (IOException e) {

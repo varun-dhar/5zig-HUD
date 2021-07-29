@@ -96,18 +96,7 @@ public class MacroCommands {
 
 	@CommandParser.Command(help = "Lists all macros.", alias = "lm")
 	public static IFormattableTextComponent listMacros(String[] args) {
-		StringBuilder macroList = new StringBuilder();
-		macroList.append("Macros: ");
-		int i = macros.keySet().size();
-		for (String s : macros.keySet()) {
-			macroList.append(s);
-			if (i-- != 1) {
-				macroList.append(", ");
-			}
-		}
-		/*macros.forEach((k,v)-> macroList.append(k).append(", "));
-		macroList.delete(macroList.length()-2,macroList.length());*/
-		return new StringTextComponent(macroList.toString());
+		return new StringTextComponent("Macros: "+StringUtils.join(macros.keySet(),", "));
 	}
 
 	private static boolean writeMacros() {

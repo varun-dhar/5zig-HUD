@@ -113,19 +113,7 @@ public class ActionCommands {
 
 	@CommandParser.Command(help = "Lists all actions.", alias = "la")
 	public static IFormattableTextComponent listActions(String[] args) {
-		StringBuilder actionList = new StringBuilder();
-		actionList.append("Actions: ");
-		int i = actions.keySet().size();
-		for (String s : actions.keySet()) {
-			actionList.append(s);
-			if (i-- != 1) {
-				actionList.append(", ");
-			}
-		}
-		/*
-		actions.forEach((k,v)-> actionList.append(k).append(", "));
-		actionList.deleteCharAt(actionList.length()-2);*/
-		return new StringTextComponent(actionList.toString());
+		return new StringTextComponent("Actions: "+StringUtils.join(actions.keySet(),", "));
 	}
 
 	private static boolean writeActions() {
