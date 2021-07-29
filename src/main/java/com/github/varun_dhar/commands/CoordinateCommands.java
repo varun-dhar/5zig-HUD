@@ -378,10 +378,8 @@ public class CoordinateCommands {
 					coordsList.append(String.format("    %s X: %d Y: %d Z: %d\n", entry.getKey(), coords[0], coords[1], coords[2]));
 				}
 			}
-			coordsList.deleteCharAt(coordsList.length()-1);
 		}
-		/*savedCoords.forEach((k,v)-> coordsList.append(k).append(" ").append(v).append("\n"));
-		coordsList.deleteCharAt(coordsList.length()-1);*/
+		coordsList.deleteCharAt(coordsList.length()-1);
 		return new StringTextComponent(coordsList.toString());
 	}
 
@@ -410,8 +408,8 @@ public class CoordinateCommands {
 					coordsList.append(String.format("      %s X: %d Y: %d Z: %d\n", entry.getKey(), coords[0], coords[1], coords[2]));
 				}
 			}
-			coordsList.deleteCharAt(coordsList.length()-1);
 		}
+		coordsList.deleteCharAt(coordsList.length()-1);
 		return new StringTextComponent(coordsList.toString());
 	}
 
