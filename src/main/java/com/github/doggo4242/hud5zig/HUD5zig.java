@@ -41,7 +41,7 @@ import java.util.*;
 public class HUD5zig//setup stuff
 {
 	public static final String MODID = "hudmod";
-	public static final int version = 10;
+	public static final int version = 11;
 
 	public enum Options {
 		HUD_X, HUD_Y, HUD_ALIGN, HUD_ENABLED, ARMOR_X, ARMOR_Y, ARMOR_ALIGN, ARMOR_ENABLED, DT_X, DT_Y, DT_ALIGN, DT_ENABLED,
