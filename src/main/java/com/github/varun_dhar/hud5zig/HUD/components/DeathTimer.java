@@ -14,12 +14,12 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar.HUD.components;
+package com.github.varun_dhar.hud5zig.HUD.components;
 
-import com.github.varun_dhar.HUD.HUDComponentTextGroup;
-import com.github.varun_dhar.HUD5zig;
-import com.github.varun_dhar.HUD.HUDComponent;
-import com.github.varun_dhar.commands.CoordinateCommands;
+import com.github.varun_dhar.hud5zig.HUD.HUDComponentTextGroup;
+import com.github.varun_dhar.hud5zig.HUD5zig;
+import com.github.varun_dhar.hud5zig.HUD.HUDComponent;
+import com.github.varun_dhar.hud5zig.commands.CoordinateCommands;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +34,7 @@ public class DeathTimer extends HUDComponent {
 
 	private final HUDComponentTextGroup textGroup;
 
-	public DeathTimer(){
+	public DeathTimer() {
 		super();
 		componentImages = null;
 		componentTextGroups = new HUDComponentTextGroup[1];
@@ -42,7 +42,7 @@ public class DeathTimer extends HUDComponent {
 		textGroup = componentTextGroups[0];
 	}
 
-	public static void setDeathInfo(int x, int y, int z,int dim){
+	public static void setDeathInfo(int x, int y, int z, int dim) {
 		deathCoords[0] = x;
 		deathCoords[1] = y;
 		deathCoords[2] = z;
@@ -50,12 +50,12 @@ public class DeathTimer extends HUDComponent {
 		dead = true;
 	}
 
-	public static void setRespawnInfo(){
+	public static void setRespawnInfo() {
 		dead = false;
 		deathTime = System.currentTimeMillis();
 	}
 
-	public static int[] getDeathCoords(){
+	public static int[] getDeathCoords() {
 		return deathCoords;
 	}
 
@@ -64,24 +64,26 @@ public class DeathTimer extends HUDComponent {
 		boolean nearby = false;
 		//enable if < 5m since death, alive, and not close to death location
 		if ((disabled = !(!dead && (System.currentTimeMillis() - deathTime) < tUnitMs.convert(5, TimeUnit.MINUTES)
-				&& Math.abs(HUD5zig.settings.get("DeathTimerEnabled")) == 1
-				&& !(nearby = (Math.abs(player.lastTickPosX-deathCoords[0]) < 10 && Math.abs(player.lastTickPosZ-deathCoords[2]) < 10
+				&& Math.abs(HUD5zig.settings.get(HUD5zig.Options.DT_ENABLED)) == 1
+				&& !(nearby = (Math.abs(player.getX() - deathCoords[0]) < 10 && Math.abs(player.getZ() - deathCoords[2]) < 10
 				&& CoordinateCommands.getDimension() == dimension))))) {
-			if(nearby){
+			if (nearby) {
 				deathTime = 0;
 			}
 			return;
 		}
-		textGroup.alignment = Math.abs(HUD5zig.settings.get("DeathTimerAlignment")) == 1;
+		textGroup.alignment = Math.abs(HUD5zig.settings.get(HUD5zig.Options.DT_ALIGN)) == 1;
 		//get seconds without minutes
-		int sec = (int) ((tUnitMs.convert(5, TimeUnit.MINUTES) -
+		/*int sec = (int) ((tUnitMs.convert(5, TimeUnit.MINUTES) -
 				(System.currentTimeMillis() - deathTime)) % tUnitMs.convert(1, TimeUnit.MINUTES) /
-				tUnitMs.convert(1, TimeUnit.SECONDS));
+				tUnitMs.convert(1, TimeUnit.SECONDS));*/
 		int min = (int) ((tUnitMs.convert(5, TimeUnit.MINUTES) - (System.currentTimeMillis() - deathTime)) /
 				tUnitMs.convert(1, TimeUnit.MINUTES));
+		int sec = (int) ((tUnitMs.convert(5, TimeUnit.MINUTES) - (System.currentTimeMillis() - deathTime) -
+				tUnitMs.convert(min, TimeUnit.MINUTES)) / tUnitMs.convert(1, TimeUnit.SECONDS));
 		//set alignment and position
-		int x = HUD5zig.settings.get("DeathTimerX");
-		int y = HUD5zig.settings.get("DeathTimerY");
+		int x = HUD5zig.settings.get(HUD5zig.Options.DT_X);
+		int y = HUD5zig.settings.get(HUD5zig.Options.DT_Y);
 		x = (x == -1 || (x + 10 * textGroup.text.length) > scrWidth) ? defXPos : x;
 		if (textGroup.alignment && (y == -1 || (y + 10 * textGroup.text.length) > scrHeight)) {
 			y = defVerYPos;

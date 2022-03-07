@@ -14,19 +14,19 @@
    limitations under the License.
  */
 
-package com.github.varun_dhar.HUD;
+package com.github.varun_dhar.hud5zig.HUD;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 
 public class HUDComponentText implements IHUDSubcomponent {
 	public int x,y;
 	public String text;
-	private static final FontRenderer renderer = Minecraft.getInstance().fontRenderer;
+	private static final Font renderer = Minecraft.getInstance().font;
 
 	@Override
-	public void render(MatrixStack matrixStack) {
-		renderer.drawStringWithShadow(matrixStack,text,x,y,0xFFFFFF);
+	public void render(PoseStack matrixStack) {
+		renderer.drawShadow(matrixStack,text,x,y,0xFFFFFF);
 	}
 }
