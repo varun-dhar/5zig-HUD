@@ -14,11 +14,11 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.HUD.components;
+package com.github.doggo4242.hud5zig.HUD.components;
 
-import com.github.doggo4242.HUD.HUDComponentTextGroup;
-import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.HUD.HUDComponent;
+import com.github.doggo4242.hud5zig.HUD.HUDComponentTextGroup;
+import com.github.doggo4242.hud5zig.HUD5zig;
+import com.github.doggo4242.hud5zig.HUD.HUDComponent;
 import net.minecraft.client.Minecraft;
 
 public class HUD extends HUDComponent {
@@ -35,14 +35,14 @@ public class HUD extends HUDComponent {
 	}
 	@Override
 	public void updateComponent() {
-		if((disabled = player == null || Math.abs(HUD5zig.settings.get("HUD-Enabled")) != 1)){
+		if((disabled = player == null || Math.abs(HUD5zig.settings.get(HUD5zig.Options.HUD_ENABLED)) != 1)){
 			return;
 		}
 		//set alignment and position
-		textGroup.alignment = Math.abs(HUD5zig.settings.get("HUD-Alignment")) == 1;
-		int x = HUD5zig.settings.get("HUD-X");
-		int y = HUD5zig.settings.get("HUD-Y");
-		int dir = (int)player.rotationYaw;//getting direction
+		textGroup.alignment = Math.abs(HUD5zig.settings.get(HUD5zig.Options.HUD_ALIGN)) == 1;
+		int x = HUD5zig.settings.get(HUD5zig.Options.HUD_X);
+		int y = HUD5zig.settings.get(HUD5zig.Options.HUD_Y);
+		int dir = (int)player.getYRot();//getting direction
 		dir=(dir%360+360+22)%360;//prevent negatives, get 0-359 angle, add 45/2
 		dir/=45;//determine direction
 		x = (x == -1 || ((x + defYSpacing*textGroup.text.length) > scrWidth && textGroup.alignment) ||
@@ -51,10 +51,10 @@ public class HUD extends HUDComponent {
 				(y > scrHeight && !textGroup.alignment)) ? defYPos : y;
 		textGroup.x = x;
 		textGroup.y = y;
-		textGroup.text[0] = String.format("%sX%s> %d",red,white,(int)player.getPosX());
-		textGroup.text[1] = String.format("%sY%s> %d",red,white,(int)player.getPosY());
-		textGroup.text[2] = String.format("%sZ%s> %d",red,white,(int)player.getPosZ());
-		textGroup.text[3] = String.format("%sFPS%s> %d",red,white,Minecraft.debugFPS);
+		textGroup.text[0] = String.format("%sX%s> %d",red,white,(int)player.getX());
+		textGroup.text[1] = String.format("%sY%s> %d",red,white,(int)player.getY());
+		textGroup.text[2] = String.format("%sZ%s> %d",red,white,(int)player.getZ());
+		textGroup.text[3] = String.format("%sFPS%s> %d",red,white,Minecraft.fps);
 		textGroup.text[4] = String.format("%sF%s> %s",red,white,face[dir]);
 	}
 }

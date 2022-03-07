@@ -14,11 +14,11 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.HUD;
+package com.github.doggo4242.hud5zig.HUD;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.ChatFormatting;
 
 public abstract class HUDComponent {
 	protected HUDComponentText[] componentText;
@@ -31,10 +31,10 @@ public abstract class HUDComponent {
 	protected static int scrWidth;
 	protected static int scrHeight;
 	protected static final Minecraft mc = Minecraft.getInstance();
-	protected static ClientPlayerEntity player;
-	protected static final String white = TextFormatting.WHITE.toString();
-	protected static final String gray = TextFormatting.GRAY.toString();
-	protected static final String red = TextFormatting.RED.toString();
+	protected static LocalPlayer player;
+	protected static final String white = ChatFormatting.WHITE.toString();
+	protected static final String gray = ChatFormatting.GRAY.toString();
+	protected static final String red = ChatFormatting.RED.toString();
 
 	public IHUDSubcomponent[][] getSubcomponents(){
 		return subcomponents;
@@ -45,8 +45,8 @@ public abstract class HUDComponent {
 	}
 
 	public void initComponent(){
-		scrWidth = mc.getMainWindow().getScaledWidth();
-		scrHeight = mc.getMainWindow().getScaledHeight();
+		scrWidth = mc.getWindow().getGuiScaledWidth();
+		scrHeight = mc.getWindow().getGuiScaledHeight();
 		player = mc.player;
 		subcomponents[0] = componentText;
 		subcomponents[1] = componentTextGroups;

@@ -14,12 +14,11 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.HUD;
+package com.github.doggo4242.hud5zig.HUD;
 
-import com.github.doggo4242.HUD.components.*;
+import com.github.doggo4242.hud5zig.HUD.components.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 
 public class HUDRenderer {
 	private static final Minecraft mc = Minecraft.getInstance();
-	private static final FontRenderer renderer = mc.fontRenderer;
 	private final ArrayList<HUDComponent> components;
 
 	public HUDRenderer(){
@@ -49,7 +47,7 @@ public class HUDRenderer {
 	public void overlay(RenderGameOverlayEvent.Post event) {
 		//prevent hunger armor bar and health bar glitching, disable HUD when chat/debugger is open
 		if (event.getType() != RenderGameOverlayEvent.ElementType.ALL || mc.player == null
-				|| mc.currentScreen instanceof ChatScreen || mc.gameSettings.showDebugInfo) {
+				|| mc.screen instanceof ChatScreen || mc.options.renderDebug) {
 			return;
 		}
 

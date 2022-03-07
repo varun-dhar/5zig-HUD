@@ -14,20 +14,20 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.misc;
+package com.github.doggo4242.hud5zig.misc;
 
-import com.github.doggo4242.HUD5zig;
+import com.github.doggo4242.hud5zig.HUD5zig;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
 
 public class StartupMessenger {
-	public static ArrayList<String> messages = new ArrayList<>();
+	private static final ArrayList<String> messages = new ArrayList<>();
 	private static boolean firstRun = true;
 	@SubscribeEvent
 	public static void onInitialPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event){
@@ -35,15 +35,16 @@ public class StartupMessenger {
 			return;
 		}
 		firstRun = false;
-		if(Math.abs(HUD5zig.settings.get("UpdaterEnabled")) == 1) {
+		if(Math.abs(HUD5zig.settings.get(HUD5zig.Options.UPDATER_ENABLED)) == 1) {
 			UpdateChecker.updateNotif(false);
 		}
-		ClientPlayerEntity player = Minecraft.getInstance().player;
+		LocalPlayer player = Minecraft.getInstance().player;
 		if(player == null){
 			return;
 		}
 		for(String msg : messages){
-			player.sendMessage(new StringTextComponent(msg), Util.DUMMY_UUID);
+			player.sendMessage(new TextComponent(msg), Util.NIL_UUID);
 		}
 	}
+	public static void addMessage(String message){messages.add(message);}
 }

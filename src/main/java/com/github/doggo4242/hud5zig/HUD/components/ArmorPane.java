@@ -14,14 +14,14 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.HUD.components;
+package com.github.doggo4242.hud5zig.HUD.components;
 
-import com.github.doggo4242.HUD.HUDComponentTextGroup;
-import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.HUD.HUDComponent;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
+import com.github.doggo4242.hud5zig.HUD.HUDComponentTextGroup;
+import com.github.doggo4242.hud5zig.HUD5zig;
+import com.github.doggo4242.hud5zig.HUD.HUDComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 public class ArmorPane extends HUDComponent {
 	private static final char[] armorLetters = {'H','C','L','B'};
@@ -39,13 +39,13 @@ public class ArmorPane extends HUDComponent {
 	}
 	@Override
 	public void updateComponent() {
-		if((disabled = player == null || Math.abs(HUD5zig.settings.get("ArmorEnabled")) != 1)){
+		if((disabled = player == null || Math.abs(HUD5zig.settings.get(HUD5zig.Options.ARMOR_ENABLED)) != 1)){
 			return;
 		}
 		//set alignment and position
-		textGroup.alignment = Math.abs(HUD5zig.settings.get("ArmorAlignment")) == 1;
-		int x = HUD5zig.settings.get("ArmorX");
-		int y = HUD5zig.settings.get("ArmorY");
+		textGroup.alignment = Math.abs(HUD5zig.settings.get(HUD5zig.Options.ARMOR_ALIGN)) == 1;
+		int x = HUD5zig.settings.get(HUD5zig.Options.ARMOR_X);
+		int y = HUD5zig.settings.get(HUD5zig.Options.ARMOR_Y);
 		x = (x == -1 || ((x + defYSpacing * textGroup.text.length) > scrWidth && textGroup.alignment) || (x > scrWidth && !textGroup.alignment)) ? defXPos : x;
 		if(textGroup.alignment && (y == -1 || (y + defYSpacing * textGroup.text.length) > scrHeight)){
 			y = defVerYPos;
@@ -54,13 +54,13 @@ public class ArmorPane extends HUDComponent {
 		}
 		textGroup.x = x;
 		textGroup.y = y;
-		ItemStack[] armor = {player.getItemStackFromSlot(EquipmentSlotType.HEAD),
-				player.getItemStackFromSlot(EquipmentSlotType.CHEST),player.getItemStackFromSlot(EquipmentSlotType.LEGS),
-				player.getItemStackFromSlot(EquipmentSlotType.FEET)};
-		textGroup.text[0] = red+TextFormatting.UNDERLINE+"Armor:"+TextFormatting.RESET;
+		ItemStack[] armor = {player.getItemBySlot(EquipmentSlot.HEAD),
+				player.getItemBySlot(EquipmentSlot.CHEST),player.getItemBySlot(EquipmentSlot.LEGS),
+				player.getItemBySlot(EquipmentSlot.FEET)};
+		textGroup.text[0] = red+ ChatFormatting.UNDERLINE+"Armor:"+ChatFormatting.RESET;
 		for(int i = 0;i<armor.length;i++) {
 			//check for empty slots and calculate percent damage, otherwise say no armor
-			int t = (!armor[i].isEmpty()&&armor[i].getMaxDamage()!=0)?(int)Math.ceil(100-(((float)armor[i].getDamage()/armor[i].getMaxDamage())*100)):0;
+			int t = (!armor[i].isEmpty()&&armor[i].getMaxDamage()!=0)?(int)Math.ceil(100-(((float)armor[i].getDamageValue()/armor[i].getMaxDamage())*100)):0;
 			textGroup.text[i+1] = (t>0)?red+armorLetters[i]+white+"> "+t+"%":"No "+armorStr[i];
 		}
 	}

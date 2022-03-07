@@ -14,12 +14,12 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.misc;
+package com.github.doggo4242.hud5zig.misc;
 
-import com.github.doggo4242.HUD5zig;
-import com.github.doggo4242.commands.CoordinateCommands;
-import com.github.doggo4242.commands.NavCommands;
-import com.github.doggo4242.HUD.components.DeathTimer;
+import com.github.doggo4242.hud5zig.HUD5zig;
+import com.github.doggo4242.hud5zig.commands.CoordinateCommands;
+import com.github.doggo4242.hud5zig.commands.NavCommands;
+import com.github.doggo4242.hud5zig.HUD.components.DeathTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -30,7 +30,7 @@ public class DeathHandler {
 	@SubscribeEvent
 	public static void onDeath(final TickEvent.PlayerTickEvent event){
 		if(!event.player.isAlive() && event.player.equals(mc.player)) {
-			DeathTimer.setDeathInfo((int)mc.player.lastTickPosX,(int)mc.player.lastTickPosY,(int)mc.player.lastTickPosZ,
+			DeathTimer.setDeathInfo((int)mc.player.xOld,(int)mc.player.yOld,(int)mc.player.zOld,
 					CoordinateCommands.getDimension());
 		}
 	}
@@ -38,8 +38,8 @@ public class DeathHandler {
 	public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
 		if(event.getPlayer().equals(mc.player)){
 			DeathTimer.setRespawnInfo();
-			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.getDeathCoords());
-			if(Math.abs(HUD5zig.settings.get("NavToDeathEnabled")) == 1){
+			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.getDeathCoords(),null,null);
+			if(Math.abs(HUD5zig.settings.get(HUD5zig.Options.NAV_TO_DEATH_ENABLED)) == 1){
 				NavCommands.nav(new String[]{"lastDeath"});
 			}
 		}

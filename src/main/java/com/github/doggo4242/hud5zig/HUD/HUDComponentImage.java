@@ -14,18 +14,19 @@
    limitations under the License.
  */
 
-package com.github.doggo4242.HUD;
+package com.github.doggo4242.hud5zig.HUD;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.gui.GuiUtils;
 
 public class HUDComponentImage implements IHUDSubcomponent{
 	public ResourceLocation image;
 	public int height,width,x,y;
-	private static final TextureManager textureManager = Minecraft.getInstance().getTextureManager();
 
 	public HUDComponentImage(){
 		image = null;
@@ -45,8 +46,8 @@ public class HUDComponentImage implements IHUDSubcomponent{
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack) {
-		textureManager.bindTexture(image);
-		GuiUtils.drawInscribedRect(matrixStack, x, y, width, height, width, height);
+	public void render(PoseStack poseStack) {
+		RenderSystem.setShaderTexture(0,image);
+		GuiComponent.blit(poseStack,x,y,width,height,width,height,width,height);
 	}
 }
