@@ -1,5 +1,5 @@
 /*
-   Copyright 2021 doggo4242 Development
+   Copyright 2022 doggo4242 Development
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ import java.net.URL;
 import java.util.*;
 
 @Mod(HUD5zig.MODID)
-public class HUD5zig//setup stuff
-{
+public class HUD5zig{
 	public static final String MODID = "hudmod";
 	public static final int version = 11;
 

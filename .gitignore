@@ -1,0 +1,7 @@
+!.gitignore
+build/
+.gradle/
+.idea/
+logs/
+run/
+gradle/
