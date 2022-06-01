@@ -42,9 +42,16 @@ public class DeathHandler {
 		if(event.getScreen() instanceof DeathScreen){
 			DeathTimer.setDeathInfo((int)mc.player.xOld,(int)mc.player.yOld,(int)mc.player.zOld,
 					CoordinateCommands.getDimension());
+		}else if(DeathTimer.isDead()){
+			DeathTimer.setRespawnInfo();
+			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.getDeathCoords(),null,null);
+			if(Math.abs(HUD5zig.settings.get(HUD5zig.Options.NAV_TO_DEATH_ENABLED)) == 1){
+				NavCommands.nav(new String[]{"lastDeath"});
+			}
 		}
 	}
 
+/*
 	@SubscribeEvent
 	public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
 		if(event.getPlayer().equals(mc.player)){
@@ -54,5 +61,5 @@ public class DeathHandler {
 				NavCommands.nav(new String[]{"lastDeath"});
 			}
 		}
-	}
+	}*/
 }

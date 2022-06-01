@@ -59,6 +59,10 @@ public class DeathTimer extends HUDComponent {
 		return deathCoords;
 	}
 
+	public static boolean isDead(){
+		return dead;
+	}
+
 	@Override
 	public void updateComponent() {
 		boolean nearby = false;
