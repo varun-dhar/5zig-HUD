@@ -24,16 +24,27 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraft.client.gui.screens.DeathScreen;
 
 public class DeathHandler {
 	private static final Minecraft mc = Minecraft.getInstance();
-	@SubscribeEvent
+/*	@SubscribeEvent
 	public static void onDeath(final TickEvent.PlayerTickEvent event){
-		if(!event.player.isAlive() && event.player.equals(mc.player)) {
+		if(!event.player.isAlive()) {
+			DeathTimer.setDeathInfo((int)mc.player.xOld,(int)mc.player.yOld,(int)mc.player.zOld,
+					CoordinateCommands.getDimension());
+		}
+	}*/
+
+	@SubscribeEvent
+	public static void onDeath(final ScreenEvent.DrawScreenEvent event){
+		if(event.getScreen() instanceof DeathScreen){
 			DeathTimer.setDeathInfo((int)mc.player.xOld,(int)mc.player.yOld,(int)mc.player.zOld,
 					CoordinateCommands.getDimension());
 		}
 	}
+
 	@SubscribeEvent
 	public static void onRespawn(final PlayerEvent.PlayerRespawnEvent event){
 		if(event.getPlayer().equals(mc.player)){
