@@ -29,25 +29,22 @@ import net.minecraft.client.gui.screens.DeathScreen;
 
 public class DeathHandler {
 	private static final Minecraft mc = Minecraft.getInstance();
-/*	@SubscribeEvent
+	@SubscribeEvent
 	public static void onDeath(final TickEvent.PlayerTickEvent event){
-		if(!event.player.isAlive()) {
-			DeathTimer.setDeathInfo((int)mc.player.xOld,(int)mc.player.yOld,(int)mc.player.zOld,
-					CoordinateCommands.getDimension());
+		if(!(mc.screen instanceof DeathScreen) && DeathTimer.isDead()){
+			DeathTimer.setRespawnInfo();
+			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.getDeathCoords(),null,null);
+			if(Math.abs(HUD5zig.settings.get(HUD5zig.Options.NAV_TO_DEATH_ENABLED)) == 1){
+				NavCommands.nav(new String[]{"lastDeath"});
+			}
 		}
-	}*/
+	}
 
 	@SubscribeEvent
 	public static void onDeath(final ScreenEvent.DrawScreenEvent event){
 		if(event.getScreen() instanceof DeathScreen){
 			DeathTimer.setDeathInfo((int)mc.player.xOld,(int)mc.player.yOld,(int)mc.player.zOld,
 					CoordinateCommands.getDimension());
-		}else if(DeathTimer.isDead()){
-			DeathTimer.setRespawnInfo();
-			CoordinateCommands.saveCoordsI("lastDeath", DeathTimer.getDeathCoords(),null,null);
-			if(Math.abs(HUD5zig.settings.get(HUD5zig.Options.NAV_TO_DEATH_ENABLED)) == 1){
-				NavCommands.nav(new String[]{"lastDeath"});
-			}
 		}
 	}
 
