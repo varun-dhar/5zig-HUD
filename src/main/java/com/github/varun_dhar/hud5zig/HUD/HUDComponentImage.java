@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,23 +18,20 @@ package com.github.varun_dhar.hud5zig.HUD;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.GuiUtils;
 
-public class HUDComponentImage implements IHUDSubcomponent{
+public class HUDComponentImage implements IHUDSubcomponent {
 	public ResourceLocation image;
-	public int height,width,x,y;
+	public int height, width, x, y;
 
-	public HUDComponentImage(){
+	public HUDComponentImage() {
 		image = null;
 		height = width = x = y = 0;
 	}
 
 	public HUDComponentImage(String path, int height, int width, int x, int y) {
-		this(new ResourceLocation(path),height,width,x,y);
+		this(new ResourceLocation(path), height, width, x, y);
 	}
 
 	public HUDComponentImage(ResourceLocation image, int height, int width, int x, int y) {
@@ -47,7 +44,7 @@ public class HUDComponentImage implements IHUDSubcomponent{
 
 	@Override
 	public void render(PoseStack poseStack) {
-		RenderSystem.setShaderTexture(0,image);
-		GuiComponent.blit(poseStack,x,y,width,height,width,height,width,height);
+		RenderSystem.setShaderTexture(0, image);
+		GuiComponent.blit(poseStack, x, y, width, height, width, height, width, height);
 	}
 }

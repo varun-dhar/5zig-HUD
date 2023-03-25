@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package com.github.varun_dhar.hud5zig.HUD;
 import com.github.varun_dhar.hud5zig.HUD.components.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -28,9 +29,9 @@ import java.util.ArrayList;
 
 public class HUDRenderer {
 	private static final Minecraft mc = Minecraft.getInstance();
-	private final ArrayList<HUDComponent> components;
+	private static final ArrayList<HUDComponent> components;
 
-	public HUDRenderer(){
+	static {
 		components = new ArrayList<>();
 		components.add(new HUD());
 		components.add(new ArmorPane());
@@ -44,9 +45,9 @@ public class HUDRenderer {
 	 * @param event Contains render event info
 	 */
 	@SubscribeEvent
-	public void overlay(RenderGameOverlayEvent.Post event) {
+	public static void overlay(RenderGuiOverlayEvent.Post event) {
 		//prevent hunger armor bar and health bar glitching, disable HUD when chat/debugger is open
-		if (event.getType() != RenderGameOverlayEvent.ElementType.ALL || mc.player == null
+		if (event.getPhase() != EventPriority.NORMAL || mc.player == null
 				|| mc.screen instanceof ChatScreen || mc.options.renderDebug) {
 			return;
 		}
@@ -61,7 +62,7 @@ public class HUDRenderer {
 					continue;
 				}
 				for(IHUDSubcomponent subcomponent : subcomponents){
-					subcomponent.render(event.getMatrixStack());
+					subcomponent.render(event.getPoseStack());
 				}
 			}
 		}

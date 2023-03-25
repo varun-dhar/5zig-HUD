@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 
 public class HUDComponentText implements IHUDSubcomponent {
-	public int x,y;
+	public int x, y;
 	public String text;
 	private static final Font renderer = Minecraft.getInstance().font;
 
 	@Override
 	public void render(PoseStack matrixStack) {
-		renderer.drawShadow(matrixStack,text,x,y,0xFFFFFF);
+		renderer.drawShadow(matrixStack, text, x, y, 0xFFFFFF);
 	}
 }

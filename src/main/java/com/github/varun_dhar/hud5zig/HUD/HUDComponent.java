@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -36,15 +36,15 @@ public abstract class HUDComponent {
 	protected static final String gray = ChatFormatting.GRAY.toString();
 	protected static final String red = ChatFormatting.RED.toString();
 
-	public IHUDSubcomponent[][] getSubcomponents(){
+	public IHUDSubcomponent[][] getSubcomponents() {
 		return subcomponents;
 	}
 
-	public HUDComponent(){
+	public HUDComponent() {
 		subcomponents = new IHUDSubcomponent[3][];
 	}
 
-	public void initComponent(){
+	public void initComponent() {
 		scrWidth = mc.getWindow().getGuiScaledWidth();
 		scrHeight = mc.getWindow().getGuiScaledHeight();
 		player = mc.player;
@@ -53,5 +53,6 @@ public abstract class HUDComponent {
 		subcomponents[2] = componentImages;
 		updateComponent();
 	}
+
 	public abstract void updateComponent();
 }

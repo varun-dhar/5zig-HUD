@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import java.net.URL;
 import java.util.*;
 
 @Mod(HUD5zig.MODID)
-public class HUD5zig{
+public class HUD5zig {
 	public static final String MODID = "hudmod";
 	public static final int version = 11;
 
@@ -59,9 +59,10 @@ public class HUD5zig{
 			return dir.get(name);
 		}
 
-		public static Set<Map.Entry<String,Options>> entrySet(){
+		public static Set<Map.Entry<String, Options>> entrySet() {
 			return dir.entrySet();
 		}
+
 		@Override
 		public String toString() {
 			return null;
@@ -75,8 +76,8 @@ public class HUD5zig{
 	}
 
 	private void clientSetup(FMLClientSetupEvent event) {
-		MinecraftForge.EVENT_BUS.register(new HUDRenderer());
-		MinecraftForge.EVENT_BUS.register(new CommandParser());
+		MinecraftForge.EVENT_BUS.register(HUDRenderer.class);
+		MinecraftForge.EVENT_BUS.register(CommandParser.class);
 		MinecraftForge.EVENT_BUS.register(StartupMessenger.class);
 		MinecraftForge.EVENT_BUS.register(DeathHandler.class);
 		readSettings();

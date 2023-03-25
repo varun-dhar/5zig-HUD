@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,31 +16,24 @@
 
 package com.github.varun_dhar.hud5zig.commands;
 
+import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.Util;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraftforge.client.event.ClientChatEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.apache.commons.lang3.StringUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.invoke.MethodType;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.CallSite;
-import java.lang.invoke.LambdaMetafactory;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 public class CommandParser {
 	@Retention(RetentionPolicy.RUNTIME)
@@ -50,58 +43,98 @@ public class CommandParser {
 		String alias();
 	}
 
-	private static final HashMap<String, Function<String[], MutableComponent>> commands = new HashMap<>();
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface StringParseGreedy {
+	}
+
 	public static final HashMap<String, String> commandHelp = new HashMap<>();
 	public static final HashMap<String, String> commandAliases = new HashMap<>();
 	private static final String prefix = "5h";
-	private static final Pattern commandPattern = Pattern.compile("/?" + prefix + " (\\w+)( .+)?");
+	private static final Map<Class<?>, ArgumentType<?>> argumentTable =
+			Map.of(String.class, StringArgumentType.word(), int.class, IntegerArgumentType.integer(),
+					boolean.class, BoolArgumentType.bool(), double.class, DoubleArgumentType.doubleArg());
+	private static LiteralArgumentBuilder<CommandSourceStack> base;
 
-	public CommandParser() {
-		registerClassCommands(GeneralCommands.class);
-		registerClassCommands(HUDCommands.class);
-		registerClassCommands(NavCommands.class);
-		registerClassCommands(MacroCommands.class);
-		registerClassCommands(CoordinateCommands.class);
-		registerClassCommands(ActionCommands.class);
+	static {
+		base = Commands.literal(prefix);
 	}
 
-	public void registerClassCommands(Object o) {
-		registerClassCommands(o.getClass());
+	private static ArgumentBuilder<CommandSourceStack, ?> methodToCommand(Parameter[] params, int param, MethodHandle handle) {
+		if (param >= params.length) {
+			return null;
+		}
+		ArgumentType<?> argumentType;
+		if (params[param].getAnnotation(StringParseGreedy.class) != null) {
+			argumentType = StringArgumentType.greedyString();
+		} else {
+			argumentType = argumentTable.get(params[param].getType());
+		}
+		var arg = Commands.argument(params[param].getName(), argumentType);
+		if (param < params.length - 1) {
+			return arg.then(methodToCommand(params, param + 1, handle));
+		} else {
+			return arg.executes((command) -> {
+				Object[] arguments = new Object[params.length];
+				for (int i = 0; i < params.length; i++) {
+					arguments[i] = command.getArgument(params[i].getName(), params[i].getType());
+				}
+				try {
+					MutableComponent ret = (MutableComponent) handle.invokeWithArguments(arguments);
+					if (ret != null) {
+						Minecraft.getInstance().player.sendSystemMessage(ret);
+					}
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+			});
+		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void registerClassCommands(Class<?> c) {
+	public static void registerClassCommands(Class<?> c) {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		MethodType methodType = MethodType.methodType(MutableComponent.class, String[].class);
+		//MethodType methodType = MethodType.methodType(MutableComponent.class, String[].class);
 		for (var method : c.getDeclaredMethods()) {
-			Annotation annotation;
+			Command annotation;
 			if ((annotation = method.getAnnotation(Command.class)) != null) {
 				try {
 					MethodHandle handle = lookup.unreflect(method);
-					if (handle.type().equals(methodType)) {
-						var type = annotation.annotationType();
-						for (var property : type.getDeclaredMethods()) {
-							if (property.getName().equals("help")) {
-								try {
-									commandHelp.put(method.getName(), (String) property.invoke(annotation, (Object[]) (null)));
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							} else if (property.getName().equals("alias")) {
-								try {
-									commandAliases.put((String) property.invoke(annotation, (Object[]) (null)), method.getName());
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						}
+					commandHelp.put(method.getName(), annotation.help());
+					commandAliases.put(annotation.alias(), method.getName());
 
-						CallSite site = LambdaMetafactory.metafactory(lookup,
-								"apply", MethodType.methodType(Function.class), handle.type().generic(), handle, handle.type());
-						MethodHandle invoker = site.getTarget();
-						Function<String[], MutableComponent> fn = (Function<String[], MutableComponent>) invoker.invoke();
-						commands.put(method.getName(), fn);
+					/*
+					CallSite site = LambdaMetafactory.metafactory(lookup,
+							"apply", MethodType.methodType(Function.class), handle.type().generic(), handle, handle.type());
+					MethodHandle invoker = site.getTarget();
+					Function<String[], MutableComponent> fn = (Function<String[], MutableComponent>) invoker.invoke();
+					commands.put(method.getName(), fn);*/
+
+					var subcommand = Commands.literal(method.getName());
+
+					if (method.getParameterCount() > 0) {
+						subcommand = subcommand.then(methodToCommand(method.getParameters(), 0, handle));
+					} else {
+						subcommand = subcommand.executes((command) -> {
+							try {
+								MutableComponent ret = (MutableComponent) handle.invokeExact();
+								if (ret != null) {
+									Minecraft.getInstance().player.sendSystemMessage(ret);
+								}
+							} catch (Throwable e) {
+								e.printStackTrace();
+							}
+							return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+						});
 					}
+					var aliasedCommand = Commands.literal(annotation.alias()).requires(subcommand.getRequirement())
+							.forward(subcommand.getRedirect(), subcommand.getRedirectModifier(), subcommand.isFork())
+							.executes(subcommand.getCommand());
+					var subcommandNode = subcommand.build();
+					for (var child : subcommandNode.getChildren()) {
+						aliasedCommand.then(child);
+					}
+					base = base.then(subcommandNode);
+					base = base.then(aliasedCommand);
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -110,7 +143,21 @@ public class CommandParser {
 	}
 
 	@SubscribeEvent
+	public static void addCommands(RegisterClientCommandsEvent event) {
+		registerClassCommands(GeneralCommands.class);
+		registerClassCommands(HUDCommands.class);
+		registerClassCommands(NavCommands.class);
+		registerClassCommands(MacroCommands.class);
+		registerClassCommands(CoordinateCommands.class);
+		registerClassCommands(ActionCommands.class);
+
+
+		event.getDispatcher().register(base);
+	}
+
+	//@SubscribeEvent
 	public void parseChat(ClientChatEvent event) {
+		/*
 		//find and run commands/macros
 		String msg = event.getMessage();
 		String arg = StringUtils.substringBefore(msg, " ");
@@ -128,14 +175,14 @@ public class CommandParser {
 						ActionCommands.actions.containsKey(action)) {
 					MinecraftForge.EVENT_BUS.post(new ClientChatEvent(action));
 				} else {
-					connection.send(new ServerboundChatPacket(action));
+					connection.send(new ServerboundChatPacket(new FriendlyByteBuf(Unpooled.copiedBuffer(action.getBytes(Charset.defaultCharset())))));
 					chatGui.addRecentChat(action);
 				}
 			}
 			return;
 		}
 		if (MacroCommands.macros.containsKey(arg)) {
-			event.setMessage(MacroCommands.macros.get(arg) + msg.substring(arg.length()));
+			//event.setMessage(MacroCommands.macros.get(arg) + msg.substring(arg.length()));
 			msg = event.getMessage();
 		}
 		Matcher matcher = commandPattern.matcher(msg);
@@ -158,13 +205,14 @@ public class CommandParser {
 			}
 			Function<String[], MutableComponent> command = commands.get(cmd);
 			if (command == null) {
-				player.sendMessage(new TextComponent("Unknown command or invalid argument. Run /5h help for a list of commands"), Util.NIL_UUID);
+				player.displayClientMessage(Component.literal("Unknown command or invalid argument. Run /5h help for a list of commands"), true);
 				return;
 			}
 			MutableComponent component = command.apply(args);
 			if (component != null) {
-				player.sendMessage(component, Util.NIL_UUID);
+				player.displayClientMessage(component, true);
 			}
 		}
+		 */
 	}
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -20,9 +20,8 @@ import com.github.varun_dhar.hud5zig.HUD5zig;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.ClickEvent;
 
@@ -34,7 +33,7 @@ import java.net.URL;
 public class UpdateChecker {
 	public static void updateNotif(boolean cInv) {
 		var player = Minecraft.getInstance().player;
-		if(player == null){
+		if (player == null) {
 			return;
 		}
 		try {
@@ -42,32 +41,32 @@ public class UpdateChecker {
 			InputStream stream = url.openStream();
 			JsonElement root = JsonParser.parseReader(new InputStreamReader(stream));
 			JsonObject rootObj = root.getAsJsonObject();
-			if(rootObj.get("version").getAsInt() > HUD5zig.version) {
-				var dlPage = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://www.curseforge.com/minecraft/mc-mods/the5zig-hud/files");
-				var updateMsg = new TextComponent("An update is available for 5zig-HUD. Click ");
-				var link = new TextComponent("here");
-				link.setStyle(Style.EMPTY.setUnderlined(true));
+			if (rootObj.get("version").getAsInt() > HUD5zig.version) {
+				var dlPage = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/the5zig-hud/files");
+				var updateMsg = Component.literal("An update is available for 5zig-HUD. Click ");
+				var link = Component.literal("here");
+				link.setStyle(Style.EMPTY.withUnderlined(true));
 				link.setStyle(link.getStyle().withClickEvent(dlPage));
 				updateMsg.append(link);
 				updateMsg.append(" to download the new version.");
-				player.sendMessage(updateMsg, Util.NIL_UUID);
-				if(!cInv) {
-					var disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND,"5h uos");
-					var disableMessage = new TextComponent("Click ");
-					var disableLink = new TextComponent("here");
-					disableLink.setStyle(Style.EMPTY.setUnderlined(true));
+				player.displayClientMessage(updateMsg, true);
+				if (!cInv) {
+					var disableClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "5h uos");
+					var disableMessage = Component.literal("Click ");
+					var disableLink = Component.literal("here");
+					disableLink.setStyle(Style.EMPTY.withUnderlined(true));
 					disableLink.setStyle(disableLink.getStyle().withClickEvent(disableClick));
 					disableMessage.append(disableLink);
 					disableMessage.append(" to disable these notifications.");
-					player.sendMessage(disableMessage, Util.NIL_UUID);
+					player.displayClientMessage(disableMessage, true);
 				}
-			} else if(cInv){
-				player.sendMessage(new TextComponent("You have the latest version of 5zig-HUD."),Util.NIL_UUID);
+			} else if (cInv) {
+				player.displayClientMessage(Component.literal("You have the latest version of 5zig-HUD."), true);
 			}
 			stream.close();
 		} catch (IOException e) {
-			if(cInv) {
-				player.sendMessage(new TextComponent("Could not check for updates."), Util.NIL_UUID);
+			if (cInv) {
+				player.displayClientMessage(Component.literal("Could not check for updates."), true);
 			}
 		}
 	}

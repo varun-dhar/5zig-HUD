@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,26 +21,29 @@ import net.minecraft.client.gui.Font;
 
 public class HUDComponentTextGroup implements IHUDSubcomponent {
 	public String[] text;
-	public int x,y;
+	public int x, y;
 	private int ySpacing = 10;
 	public boolean alignment;
 	private static final Font renderer = Minecraft.getInstance().font;
-	public HUDComponentTextGroup(int size){
+
+	public HUDComponentTextGroup(int size) {
 		text = new String[size];
 	}
-	public HUDComponentTextGroup(int size,int ySpacing){
+
+	public HUDComponentTextGroup(int size, int ySpacing) {
 		text = new String[size];
 		this.ySpacing = ySpacing;
 	}
-	public void render(PoseStack matrixStack){
-		if(alignment) {
+
+	public void render(PoseStack matrixStack) {
+		if (alignment) {
 			int tmpY = y;
-			for(String s : text) {
-				renderer.drawShadow(matrixStack,s,x,tmpY,0xFFFFFF);
-				tmpY+=ySpacing;
+			for (String s : text) {
+				renderer.drawShadow(matrixStack, s, x, tmpY, 0xFFFFFF);
+				tmpY += ySpacing;
 			}
-		}else{
-			renderer.drawShadow(matrixStack,String.join(" ",text),x,y,0xFFFFFF);
+		} else {
+			renderer.drawShadow(matrixStack, String.join(" ", text), x, y, 0xFFFFFF);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2022 Varun Dhar
+   Copyright 2023 Varun Dhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -24,22 +24,23 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 
 public class ArmorPane extends HUDComponent {
-	private static final char[] armorLetters = {'H','C','L','B'};
-	private static final String[] armorStr = {"helmet","chestplate","leggings","boots"};
+	private static final char[] armorLetters = {'H', 'C', 'L', 'B'};
+	private static final String[] armorStr = {"helmet", "chestplate", "leggings", "boots"};
 	private static final int defVerYPos = 66;
 	private static final int defHorYPos = 23;
 	private final HUDComponentTextGroup textGroup;
 
-	public ArmorPane(){
+	public ArmorPane() {
 		super();
 		componentImages = null;
 		componentTextGroups = new HUDComponentTextGroup[1];
-		componentTextGroups[0] = new HUDComponentTextGroup(5,defYSpacing);
+		componentTextGroups[0] = new HUDComponentTextGroup(5, defYSpacing);
 		textGroup = componentTextGroups[0];
 	}
+
 	@Override
 	public void updateComponent() {
-		if((disabled = player == null || Math.abs(HUD5zig.settings.get(HUD5zig.Options.ARMOR_ENABLED)) != 1)){
+		if ((disabled = player == null || Math.abs(HUD5zig.settings.get(HUD5zig.Options.ARMOR_ENABLED)) != 1)) {
 			return;
 		}
 		//set alignment and position
@@ -47,21 +48,21 @@ public class ArmorPane extends HUDComponent {
 		int x = HUD5zig.settings.get(HUD5zig.Options.ARMOR_X);
 		int y = HUD5zig.settings.get(HUD5zig.Options.ARMOR_Y);
 		x = (x == -1 || ((x + defYSpacing * textGroup.text.length) > scrWidth && textGroup.alignment) || (x > scrWidth && !textGroup.alignment)) ? defXPos : x;
-		if(textGroup.alignment && (y == -1 || (y + defYSpacing * textGroup.text.length) > scrHeight)){
+		if (textGroup.alignment && (y == -1 || (y + defYSpacing * textGroup.text.length) > scrHeight)) {
 			y = defVerYPos;
-		}else if(!textGroup.alignment && (y == -1 || y > scrHeight)){
+		} else if (!textGroup.alignment && (y == -1 || y > scrHeight)) {
 			y = defHorYPos;
 		}
 		textGroup.x = x;
 		textGroup.y = y;
 		ItemStack[] armor = {player.getItemBySlot(EquipmentSlot.HEAD),
-				player.getItemBySlot(EquipmentSlot.CHEST),player.getItemBySlot(EquipmentSlot.LEGS),
+				player.getItemBySlot(EquipmentSlot.CHEST), player.getItemBySlot(EquipmentSlot.LEGS),
 				player.getItemBySlot(EquipmentSlot.FEET)};
-		textGroup.text[0] = red+ ChatFormatting.UNDERLINE+"Armor:"+ChatFormatting.RESET;
-		for(int i = 0;i<armor.length;i++) {
+		textGroup.text[0] = red + ChatFormatting.UNDERLINE + "Armor:" + ChatFormatting.RESET;
+		for (int i = 0; i < armor.length; i++) {
 			//check for empty slots and calculate percent damage, otherwise say no armor
-			int t = (!armor[i].isEmpty()&&armor[i].getMaxDamage()!=0)?(int)Math.ceil(100-(((float)armor[i].getDamageValue()/armor[i].getMaxDamage())*100)):0;
-			textGroup.text[i+1] = (t>0)?red+armorLetters[i]+white+"> "+t+"%":"No "+armorStr[i];
+			int t = (!armor[i].isEmpty() && armor[i].getMaxDamage() != 0) ? (int) Math.ceil(100 - (((float) armor[i].getDamageValue() / armor[i].getMaxDamage()) * 100)) : 0;
+			textGroup.text[i + 1] = (t > 0) ? red + armorLetters[i] + white + "> " + t + "%" : "No " + armorStr[i];
 		}
 	}
 }
